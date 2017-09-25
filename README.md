@@ -3,7 +3,7 @@ CHOU CHI HO
 1155063142
 25-9-2017:
 Committed first time.
-Uploaded Folders:html,img,js
+Uploaded Folders:html,img,js\n
 Uploaded Files:MainProduct.html, style.css
 Main page,product list and product details pages are dynamically loaded using javascript in one html file.
 All class are specified in style.css
