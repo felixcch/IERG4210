@@ -1,7 +1,7 @@
 # IERG4210_2017
-CHOU CHI HO 
-1155063142
-25-9-2017:
+CHOU CHI HO  
+1155063142  
+25-9-2017:  
 Committed first time.  
 Uploaded Folders:html,img,js  
 Uploaded Files:MainProduct.html, style.css  
