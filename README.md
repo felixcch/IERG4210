@@ -12,8 +12,12 @@ Folder "img" contains the product images.
 Folder "js" contains the source javascript.  
 
 
-28-9-20187:
+28-9-2017:
 Phase-2 committed:
 
-Elastic IP:52.221.138.113
+Elastic IP: 52.221.138.113
 Instance Name: ierg4210
+
+14-10-2017:
+Phase2 committed:
+phase 2b requirements fulfiled
