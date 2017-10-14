@@ -10,3 +10,10 @@ All class are specified in style.css
 Folder "html" contains the products html file and will be loaded if needed.  
 Folder "img" contains the product images.  
 Folder "js" contains the source javascript.  
+
+
+28-9-20187:
+Phase-2 committed:
+
+Elastic IP:52.221.138.113
+Instance Name: ierg4210
