@@ -16,7 +16,7 @@ $("#shoppingcart p").hover(function(){
     $("#shoppinglist").html("Shopping List Total:$"+Total);
 });
 $(document).ready(function(){
-    $("#content").load("html/Home.html");
+
        updatePrice();
 });
 function load_detail(el){
@@ -34,9 +34,10 @@ function load_detail(el){
         "<a  href=\"#\" onclick=\"load(this)\">" + nav[0] + "</a>"+ ">"+
         "<a  href=\"#\" onclick=\"load(this)\">" + nav[1]+ "</a>");
 }
-function load(el) {
-
-    $("#content").load("html/" + el.textContent + ".html");
+function load(el, catid) {
+    window.location.href = "product.php?catid="+catid+"&pid="+ el.id;
+   // $("#content").load("html/" + el.textContent + ".html");
+    /*
     if(el.textContent!="Home") {
         nav[0] = el.textContent;
         $("#nav-menu").html("<a href=\"#\" onclick=\"load(this)\">Home</a>" + ">" +
@@ -45,6 +46,7 @@ function load(el) {
     else{
         $("#nav-menu").html("<a href=\"#\" onclick=\"load(this)\">Home</a>");
     }
+    */
 }
 function addtocart(item){
     for( var i =0; i < shoppinglist.length ;i++){

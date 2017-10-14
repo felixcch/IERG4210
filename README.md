@@ -15,5 +15,5 @@ Folder "js" contains the source javascript.
 28-9-20187:
 Phase-2 committed:
 
-Elastic IP:52.221.138.113
+Elastic IP:34.213.174.181
 Instance Name: ierg4210
