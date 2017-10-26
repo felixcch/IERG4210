@@ -83,7 +83,7 @@ function ierg4210_prod_insert() {
 	// Copy the uploaded file to a folder which can be publicly accessible at incl/img/[pid].jpg
 
 	if ($_FILES["file"]["error"] == 0
-        && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png")
+        && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png" || $_FILES["file"]["type"]=="image/gif")
 		&& $_FILES["file"]["size"] < 5000000) {
 
 		$q->execute(array($_POST['catid'],$_POST['name'],$_POST['price'],$_POST['description']));
@@ -139,7 +139,7 @@ function ierg4210_prod_edit(){
         }
     };
     if ($_FILES["file"]["error"] == 0
-        && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png")
+        && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png" || $_FILES["file"]["type"]=="image/gif")
         && $_FILES["file"]["size"] < 5000000) {
         $q->execute(array($_POST['pid']));
         // Note: Take care of the permission of destination folder (hints: current user is apache)
