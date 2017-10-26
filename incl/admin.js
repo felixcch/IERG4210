@@ -1,5 +1,4 @@
 (function(){
-    var url= "admin-process.php";
     function updateUI() {
         myLib.get({action:'cat_fetchall'}, function(json){
             // loop over the server response json
@@ -12,7 +11,7 @@
             el('prod_insert_catid').innerHTML = '<option></option>' + options.join('');
             el('prod_edit_catid').innerHTML = '<option></option>' + options.join('');
             el('categoryList').innerHTML = listItems.join('');
-        },url)
+        })
         myLib.get({action:'prod_fetchall'}, function(json){
             // loop over the server response json
             //   the expected format (as shown in Firebug):
@@ -21,7 +20,7 @@
                 listItems.push('<li id="prod' , parseInt(prod.pid) , '"><span class="name">' , prod.name.escapeHTML() , '</span> <span class="delete">[Delete]</span> <span class="edit">[Edit]</span></li>');
             }
             el('productList').innerHTML = listItems.join('');
-        },url);
+        });
     }
     updateUI();
 
@@ -101,7 +100,7 @@
             // fill in the editing form with existing values
             el('prod_to_edit').innerHTML = name;
             el('prod_edit_pid').value =id;
-            myLib.get(process,{action:'prod_fetch',pid:id}, function(json){
+            myLib.get({action:'prod_fetch',pid:id}, function(json){
                 // loop over the server response json
                 //   the expected format (as shown in Firebug):
                 for (var options = [], listItems = [],
@@ -111,7 +110,7 @@
                     el('prod_edit_description').value =(prod.description).escapeHTML();
                 }
 
-            },url);
+            });
 
             //handle the click on the category name
         } else {

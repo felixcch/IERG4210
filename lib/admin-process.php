@@ -39,7 +39,11 @@ function ierg4210_cat_insert() {
 function ierg4210_cat_edit() {
     if (!preg_match('/^[\w\- ]+$/', $_POST['name']))
         throw new Exception("invalid-name");
-	return true;
+    if (!preg_match('/^\d*$/', $_POST['catid']))
+        throw new Exception("invalid-catid");
+    $db = ierg4210_DB();
+    $q = $db->prepare("UPDATE categories SET name=(?) WHERE catid=(?)");
+    return $q->execute(array($_POST['name'],$_POST['catid']));
 }
 
 function ierg4210_cat_delete() {
@@ -128,7 +132,12 @@ function ierg4210_prod_edit(){
         $q = $db->prepare($q);
 }
     // Copy the uploaded file to a folder which can be publicly accessible at incl/img/[pid].jpg
-    if(!file_exists($_FILES['file']['tmp_name']))return false;
+    if(!file_exists($_FILES['file']['tmp_name'])){
+        if($q->execute(array($_POST['pid']))){
+            header('Location:../admin.html');
+            exit();
+        }
+    };
     if ($_FILES["file"]["error"] == 0
         && $_FILES["file"]["type"] == "image/jpeg"
         && $_FILES["file"]["size"] < 5000000) {
@@ -155,7 +164,12 @@ function ierg4210_prod_delete(){
     global $db;
     $db = ierg4210_DB();
     $q = $db->prepare("DELETE FROM  products  WHERE pid=?");
-    return $q->execute(array($_POST['pid']));
+
+    if($q->execute(array($_POST['pid']))){
+        if(unlink(getcwd() ."/../img/" . $_POST['pid'] . ".jpg"))
+        return true;
+    }
+    return false;   
 }
 
 header('Content-Type: application/json');
