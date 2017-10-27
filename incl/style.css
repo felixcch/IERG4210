@@ -1,6 +1,20 @@
 #itemlist input{
 	width:5%;
 }
+#Total{
+	font-size:15px;
+	font-weight: bold;
+	display:inline-block;
+	background: transparent;
+	border:none;
+	color:red;
+	width:70px;
+}
+#shoppinglist{
+	height:5%;
+	border-bottom: 1px solid black;
+	width: 35%;
+}
 .shoppingcart{
 	z-index:2;
 	position:absolute;
@@ -12,6 +26,9 @@
 	padding:0;
 	list-style:none;
 	margin:0;
+}
+.inputlist{
+	width: 50px;
 }
 .shoppingcart ul {display: none }
 .shoppingcart:hover ul{display:block }

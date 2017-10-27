@@ -1,6 +1,5 @@
 (function(){
     $_GET = {};
-
     document.location.search.replace(/\??(?:([^=]+)=([^&]*)&?)/g, function () {
         function decode(s) {
             return decodeURIComponent(s.split("+").join(" "));
@@ -25,19 +24,19 @@
                 //   the expected format (as shown in Firebug):
                 for (var options = [], listItems = [],
                          i = 0, prod; prod = json[i]; i++) {
-                    prod.pid= parseInt(prod.pid);
-                    if( pid===prod.pid){
-                        el('nav_up').innerHTML+='> <a href="product.php?catid='+prod.catid+'&pid='+prod.pid+'">'+prod.name+'</a>';
-                        el('product_detail').innerHTML='<img  src="img/'+prod.pid+'.jpg"/>\n' +
+                    prod.pid = parseInt(prod.pid);
+                    if (pid === prod.pid) {
+                        el('nav_up').innerHTML += '> <a href="product.php?catid=' + prod.catid + '&pid=' + prod.pid + '">' + prod.name + '</a>';
+                        el('product_detail').innerHTML = '<img  src="img/' + prod.pid + '.jpg"/>\n' +
                             '     <p>\n' +
-                            prod.name +'</br>\n' +
-                            '        Price:'+prod.price+'</br>\n' +
-                            '        Description: '+prod.description+'</br>\n' +
-                            '        <button onclick="addtocart('+prod.pid+')">Add to cart</button>\n' +
-                            '    </p>';
+                            prod.name + '</br>\n' +
+                            '        Price:' + prod.price + '</br>\n' +
+                            '        Description: ' + prod.description + '</br>\n' +
+                            '       <button id="but'+ prod.pid+ '" name="'+ prod.name+'" class="button">Add to cart</button>\n' +
+                            '   </p>';
                     }
-
                 }
+                addEventtoButton();
             });
         })
 

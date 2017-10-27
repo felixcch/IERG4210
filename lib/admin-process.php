@@ -65,91 +65,90 @@ function ierg4210_prod_insert() {
 	// DB manipulation
 	global $db;
 	$db = ierg4210_DB();
-	
-	// TODO: complete the rest of the INSERT command
-	if (!preg_match('/^\d*$/', $_POST['catid']))
+	if (!preg_match('/^\d*$/', (int)  $_POST['catid']))
 		throw new Exception("invalid-catid");
 	$_POST['catid'] = (int) $_POST['catid'];
 	if (!preg_match('/^[\w\- ]+$/', $_POST['name']))
-		throw new Exception("invalid-name");
+		throw new Exception("invalid-name" .$_POST['name']);
 	if (!preg_match('/^[\d\.]+$/', $_POST['price']))
 		throw new Exception("invalid-price");
 	if (!preg_match('/^[\w\- ]+$/', $_POST['description']))
 		throw new Exception("invalid-text");
-	
 	$sql="INSERT INTO products (catid, name, price, description) VALUES (?, ?, ?, ?)";
 	$q = $db->prepare($sql);
 	// The lastInsertId() function returns the pid (primary key) resulted by the last INSERT command
 	// Copy the uploaded file to a folder which can be publicly accessible at incl/img/[pid].jpg
-
-	if ($_FILES["file"]["error"] == 0
-        && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png" || $_FILES["file"]["type"]=="image/gif")
-		&& $_FILES["file"]["size"] < 5000000) {
-
-		$q->execute(array($_POST['catid'],$_POST['name'],$_POST['price'],$_POST['description']));
-		$lastId = $db->lastInsertId();
-		// Note: Take care of the permission of destination folder (hints: current user is apache)
-		if (move_uploaded_file($_FILES['file']['tmp_name'], getcwd() ."/../img/" . $lastId . ".jpg")) {
-		// redirect back to original page; you may comment it during debug
-			header('Location: ../admin.html');
-			exit();
-		}
-	}
-	// Only an invalid file will result in the execution below
-	// To replace the content-type header which was json and output an error message
-	header('Content-Type: text/html; charset=utf-8');
-	echo 'Invalid file detected. <br/><a href="javascript:history.back();">Back to admin panel.</a>';
-	exit();
-}
-function ierg4210_prod_edit(){
-    global $db;
-    $db = ierg4210_DB();
-    if (!preg_match('/^\d*$/', $_POST['catid']))
-        throw new Exception("invalid-catid");
-    if (!preg_match('/^\d*$/', $_POST['pid']))
-        throw new Exception("invalid-pid");
-    $_POST['catid'] = (int) $_POST['catid'];
-    $_POST['pid'] = (int) $_POST['pid'];
-    if (!preg_match('/^[\w\- ]+$/', $_POST['name']))
-        throw new Exception("invalid-name");
-    if (!preg_match('/^[\d\.]+$/', $_POST['price']))
-        throw new Exception("invalid-price");
-    if (!preg_match('/^[\w\- ]+$/', $_POST['description']))
-        throw new Exception("invalid-text");
-    $catid = array_key_exists('catid',$_POST)? $_POST['catid'] :'';
-    $catid = (int)$catid;
-    $name = array_key_exists('name',$_POST)? $_POST['name'] :'';
-    $price = array_key_exists('price',$_POST)? $_POST['price'] :'';
-    $description=array_key_exists('description',$_POST)? $_POST['description'] :'';
-
-    if($catid || !empty($name)|| !empty($price) ||!empty($description)){
-        $q = "UPDATE  products  SET ";
-        $q .=($catid!=0 || $catid!=null)? "catid=$catid, ":"";
-        $q .=(!empty($name))? "name='$name', ":"";
-        $q .=(!empty($price))? "price=$price, ":"";
-        $q .=(!empty($description))? "description='$description' ":"";
-        $q .= " WHERE pid = (?) ;";
-        $q = $db->prepare($q);
-}
-    // Copy the uploaded file to a folder which can be publicly accessible at incl/img/[pid].jpg
-    if(!file_exists($_FILES['file']['tmp_name'])){
-        if($q->execute(array($_POST['pid']))){
-            header('Location:../admin.html');
-            exit();
+    if($q->execute(array($_POST['catid'],$_POST['name'],$_POST['price'],$_POST['description']))) {
+        if ($_FILES["file"]["error"] == 0
+            && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png" || $_FILES["file"]["type"] == "image/gif")
+            //&& (mime_content_type($_FILES["file"]["tmp_name"])=="image/jpeg" || mime_content_type($_FILES["file"]["tmp_name"])=="image/png"||mime_content_type($_FILES["file"]["type"])=="tmp_name/gif")
+            && $_FILES["file"]["size"] < 5000000) {
+            $lastId = $db->lastInsertId();
+            // Note: Take care of the permission of destination folder (hints: current user is apache)
+            if (move_uploaded_file($_FILES['file']['tmp_name'], getcwd() . "/../img/" . $lastId . ".jpg")) {
+                // redirect back to original page; you may comment it during debug
+                header('Location:../admin.html');
+                exit();
+            }
         }
-    };
-    if ($_FILES["file"]["error"] == 0
-        && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png" || $_FILES["file"]["type"]=="image/gif")
-        && $_FILES["file"]["size"] < 5000000) {
-        $q->execute(array($_POST['pid']));
-        // Note: Take care of the permission of destination folder (hints: current user is apache)
-        if (move_uploaded_file($_FILES["file"]["tmp_name"], getcwd() ."/../img/" . $_POST['pid'] . ".jpg")) {
-            // redirect back to original page; you may comment it during debug
-            header('Location:../admin.html');
+        else{
+            header('Content-Type: text/html; charset=utf-8');
+            echo 'Invalid file detected. <br/><a href="javascript:history.back();">Back to admin panel.</a>';
             exit();
         }
     }
+	// Only an invalid file will result in the execution below
+	// To replace the content-type header which was json and output an error message
+    header('Content-Type: text/html; charset=utf-8');
+    echo 'Fail to insert. <br/><a href="javascript:history.back();">Back to admin panel.</a>';
+    exit();
+}
+function ierg4210_prod_edit()
+{
+    global $db;
+    $db = ierg4210_DB();
 
+    if (!preg_match('/^\d*$/', $_POST['ecatid']))
+        throw new Exception("invalid-catid");
+    if (!preg_match('/^\d*$/', $_POST['epid']))
+        throw new Exception("invalid-pid");
+    $_POST['catid'] = (int)$_POST['ecatid'];
+    $_POST['pid'] = (int)$_POST['epid'];
+    if (!preg_match('/^[\w\- ]+$/', $_POST['ename']))
+        throw new Exception("invalid-name");
+    if (!preg_match('/^[\d\.]+$/', $_POST['eprice']))
+        throw new Exception("invalid-price");
+    if (!preg_match('/^[\w\- ]+$/', $_POST['edescription']))
+        throw new Exception("invalid-text");
+    $catid = $_POST['ecatid'];
+    $name = $_POST['ename'];
+    $price = $_POST['eprice'];
+    $description = $_POST['edescription'];
+    if ($catid || !empty($name) || !empty($price) || !empty($description)) {
+        $q = "UPDATE  products  SET ";
+        $q .= ($catid != 0 || $catid != null) ? "catid=$catid, " : "";
+        $q .= (!empty($name)) ? "name='$name', " : "";
+        $q .= (!empty($price)) ? "price=$price, " : "";
+        $q .= (!empty($description)) ? "description='$description' " : "";
+        $q .= " WHERE pid = (?) ;";
+        $q = $db->prepare($q);
+    }
+        // Copy the uploaded file to a folder which can be publicly accessible at incl/img/[pid].jpg
+        if (!file_exists($_FILES['file']['tmp_name'])) {
+            return ($q->execute(array($_POST['epid'])));
+        }
+        if ($_FILES["file"]["error"] == 0
+            && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png" || $_FILES["file"]["type"] == "image/gif")
+            //&& (mime_content_type($_FILES["file"]["tmp_name"])=="image/jpeg" || mime_content_type($_FILES["file"]["tmp_name"])=="image/png"||mime_content_type($_FILES["file"]["type"])=="tmp_name/gif")
+            && $_FILES["file"]["size"] < 5000000) {
+            $q->execute(array($_POST['epid']));
+            // Note: Take care of the permission of destination folder (hints: current user is apache)
+            if (move_uploaded_file($_FILES["file"]["tmp_name"], getcwd() . "/../img/" . $_POST['pid'] . ".jpg")) {
+                // redirect back to original page; you may comment it during debug
+                header('Location:../admin.html');
+                exit();
+            }
+        }
     // Only an invalid file will result in the execution below
     // To replace the content-type header which was json and output an error message
     header('Content-Type: text/html; charset=utf-8');

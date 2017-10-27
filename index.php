@@ -12,8 +12,8 @@ readfile('html/header.html');
     <a href="index.php"">Home</a>
 </div>
 <div id="shoppingcart" class="shoppingcart">
-    <p id="shoppinglist">Shopping List</p>
-    <ul id="itemlist">
+    <p id="shoppinglist">Shopping List Total:$ <input id="Total" type="number" value=0 readonly/></p>
+    <ul id="shoppingitemlist">
 
     </ul>
     <input type="submit" value="Checkout" />
@@ -30,5 +30,6 @@ readfile('html/header.html');
 <?php readfile( 'html/footer.html')?>
 <script type="text/javascript" src="incl/myLib.js"></script>
 <script type="text/javascript" src="incl/index.js"></script>
+<script type="text/javascript" src="incl/shoppinglist.js"></script>
 </body>
 </html>

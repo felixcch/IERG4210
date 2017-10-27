@@ -1,3 +1,4 @@
+
 (function(){
     $_GET = {};
     document.location.search.replace(/\??(?:([^=]+)=([^&]*)&?)/g, function () {
@@ -21,14 +22,12 @@
                      i = 0, prod; prod = json[i]; i++) {
                 prod.catid = parseInt(prod.catid);
                 if(cid===prod.catid)
-                    listItems.push('<li id="',prod.name.escapeHTML(), '"><a href = "product.php?catid=',prod.catid,'&pid=',prod.pid,'"> <img src="img/',parseInt(prod.pid),'.jpg"  > <a   href="product.php?catid=',prod.catid,'&pid=',prod.pid,'">',prod.name.escapeHTML(),'</a>$',prod.price,' </a> <button onclick="addtocart(',prod.name,')">Add to cart</button> </li>');
+                    listItems.push('<li id="',prod.name.escapeHTML(), '"><a href = "product.php?catid=',prod.catid,'&pid=',prod.pid,'"> <img src="img/',parseInt(prod.pid),'.jpg"  > <a   href="product.php?catid=',prod.catid,'&pid=',prod.pid,'">',prod.name.escapeHTML(),'</a>$',prod.price,' </a> <button id="but',prod.pid,'" name="',prod.name,'" class="button">Add to cart</button> </li>');
             }
             el('product_list').innerHTML = listItems.join('');
+            addEventtoButton();
         });
-    }
 
-    function load(el, catid) {
-        window.location.href = "product.php?catid="+catid+"&pid="+ el.id;
     }
     myLib.get({action:'cat_fetchall'}, function(json){
         // loop over the server response json
