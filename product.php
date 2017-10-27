@@ -28,6 +28,7 @@ readfile('html/header.html');
 <?php readfile('html/footer.html');?>
 <script type="text/javascript" src="incl/myLib.js"></script>
 <script type="text/javascript" src="incl/product.js"> </script>
+<script type="text/javascript" src="incl/shoppinglist.js"></script>
 </body>
 </html>
 

@@ -2,9 +2,18 @@
 	width:5%;
 }
 #Total{
+	font-size:15px;
+	font-weight: bold;
+	display:inline-block;
 	background: transparent;
-	border: none;
+	border:none;
 	color:red;
+	width:70px;
+}
+#shoppinglist{
+	height:5%;
+	border-bottom: 1px solid black;
+	width: 35%;
 }
 .shoppingcart{
 	z-index:2;
