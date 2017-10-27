@@ -19,5 +19,4 @@ Elastic IP:http://52.221.138.113
 Instance Name: ierg4210
 
 
-26-10-2017:
-phase-2 committed. Phase2b done
+14-10/

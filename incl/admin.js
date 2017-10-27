@@ -68,6 +68,19 @@
             updateUI();
         });
     }
+    el('prod_edit').onsubmit = function() {
+        return myLib.submit(this, function() {
+            // toggle the edit/view display
+            el('productEditPanel').hide();
+            el('productPanel').show();
+            updateUI();
+        });
+    }
+    el('prod_insert').onsubmit = function(e) {
+        return myLib.submit(e, function() {
+            updateUI();
+        });
+    }
     el('cat_edit_cancel').onclick = function() {
         // toggle the edit/view display
         el('categoryEditPanel').hide();
@@ -87,6 +100,7 @@
             id = target.parentNode.id.replace(/^prod/, ''),
             name = target.parentNode.querySelector('.name').innerHTML;
         // handle the delete click
+        alert(id);
         if ('delete' === target.className) {
             confirm('Sure?') && myLib.post({action: 'prod_delete', pid: id}, function(json){
                 alert('"' + name + '" is deleted successfully!');

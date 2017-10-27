@@ -21,7 +21,7 @@ function load(el, catid) {
 }
 function addtocart(pid){
     var shoppinglist = localStorage.getItem('shoppinglist');
-    if(!shoppinglist){
+    if(shoppinglist===undefined){
         var shoppinglist ={};
     }
     shoppinglist[pid] = 1;

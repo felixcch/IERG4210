@@ -12,8 +12,8 @@ readfile('html/header.html');
     <a href="index.php"">Home</a>
 </div>
 <div id="shoppingcart" class="shoppingcart">
-    <p id="shoppinglist">Shopping List</p>
-    <ul id="itemlist">
+    <p id="shoppinglist">Shopping List Total:$ <input id="Total" type="number" value=0 min=0 readonly/></p>
+    <ul id="shoppingitemlist">
     </ul>
     <input type="submit" value="Checkout" />
 </div>
