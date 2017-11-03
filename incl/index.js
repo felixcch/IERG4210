@@ -1,5 +1,7 @@
 
 (function(){
+    var ui = window.ui = (window.ui || {});
+    var cart = ui.cart = (ui.cart || {});
     $_GET = {};
     document.location.search.replace(/\??(?:([^=]+)=([^&]*)&?)/g, function () {
         function decode(s) {
@@ -25,10 +27,11 @@
                     listItems.push('<li id="',prod.name.escapeHTML(), '"><a href = "product.php?catid=',prod.catid,'&pid=',prod.pid,'"> <img src="img/',parseInt(prod.pid),'.jpg"  > <a   href="product.php?catid=',prod.catid,'&pid=',prod.pid,'">',prod.name.escapeHTML(),'</a>$',prod.price,' </a> <button id="but',prod.pid,'" name="',prod.name,'" class="button">Add to cart</button> </li>');
             }
             el('product_list').innerHTML = listItems.join('');
-            addEventtoButton();
+            cart.addEventtoButton();
         });
 
     }
+
     myLib.get({action:'cat_fetchall'}, function(json){
         // loop over the server response json
         //   the expected format (as shown in Firebug):

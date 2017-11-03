@@ -1,4 +1,6 @@
 (function(){
+    var ui = window.ui = (window.ui || {});
+    var cart = ui.cart = (ui.cart || {});
     $_GET = {};
     document.location.search.replace(/\??(?:([^=]+)=([^&]*)&?)/g, function () {
         function decode(s) {
@@ -36,13 +38,10 @@
                             '   </p>';
                     }
                 }
-                addEventtoButton();
+                cart.addEventtoButton();
             });
         })
 
     }
-    if($_GET['pid']!==undefined && $_GET['catid'] !== undefined)
     updateUI(parseInt($_GET['pid']),parseInt($_GET['catid']));
-    else
-        alert('invalid pid or catid');
 })();
