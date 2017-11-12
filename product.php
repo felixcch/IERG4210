@@ -6,7 +6,7 @@
 </head>
 <body>
 <?php
-readfile('html/header.html');
+include('incl/header.php');
 ?>
 <div id="nav_up" class="nav-menu">
     <a href="index.php"">Home</a>
@@ -25,7 +25,7 @@ readfile('html/header.html');
     <ul id = 'nav_left'>
     </ul>
 </nav>
-<?php readfile('html/footer.html');?>
+<?php readfile('incl/footer.html');?>
 <script type="text/javascript" src="incl/myLib.js"></script>
 <script type="text/javascript" src="incl/product.js"> </script>
 <script type="text/javascript" src="incl/shoppinglist.js"></script>

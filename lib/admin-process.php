@@ -1,13 +1,18 @@
 <?php
 include_once('db.inc.php');
-
+include_once('util.php');
+$auth = ierg4210_validateCookie();
+if(!$auth) {header("Location:login.php");}
+else{
+    if(!$auth['isAdmin']) header("Location:index.php");
+}
 function ierg4210_cat_fetchall() {
-	// DB manipulation
-	global $db;
-	$db = ierg4210_DB();
-	$q = $db->prepare("SELECT * FROM categories LIMIT 100;");
-	if ($q->execute())
-		return $q->fetchAll();
+    // DB manipulation
+    global $db;
+    $db = ierg4210_DB();
+    $q = $db->prepare("SELECT * FROM categories LIMIT 100;");
+    if ($q->execute())
+        return $q->fetchAll();
 }
 function ierg4210_prod_fetchall() {
     // DB manipulation
@@ -87,7 +92,7 @@ function ierg4210_prod_insert() {
             // Note: Take care of the permission of destination folder (hints: current user is apache)
             if (move_uploaded_file($_FILES['file']['tmp_name'], getcwd() . "/../img/" . $lastId . ".jpg")) {
                 // redirect back to original page; you may comment it during debug
-                header('Location:../admin.html');
+                header('Location:../admin.php');
                 exit();
             }
         }
@@ -145,7 +150,7 @@ function ierg4210_prod_edit()
             // Note: Take care of the permission of destination folder (hints: current user is apache)
             if (move_uploaded_file($_FILES["file"]["tmp_name"], getcwd() . "/../img/" . $_POST['pid'] . ".jpg")) {
                 // redirect back to original page; you may comment it during debug
-                header('Location:../admin.html');
+                header('Location:../admin.php');
                 exit();
             }
         }
@@ -163,7 +168,6 @@ function ierg4210_prod_delete(){
     global $db;
     $db = ierg4210_DB();
     $q = $db->prepare("DELETE FROM  products  WHERE pid=?");
-
     if($q->execute(array($_POST['pid']))){
         if(unlink(getcwd() ."/../img/" . $_POST['pid'] . ".jpg"))
         return true;
