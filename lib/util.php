@@ -22,7 +22,11 @@ function ierg4210_validateCookie()
             $q= $db->prepare('SELECT * FROM user WHERE email=?');
             $q->execute(array($t['em']));
             if($r=$q->fetch()) {
-                $realk = hash_hmac('sha256', $t['exp'].$r['password'], $r['salt']);
+                $options = [
+                    'salt' =>$r['salt'], //write your own code to generate a suitable salt
+                    'cost' => 12 // the default cost is 10
+                ];
+                $realk = password_hash($t['exp'].$r['password'], PASSWORD_DEFAULT, $options);
                 if ($realk == $t['k']) {
                     session_start();
                     session_regenerate_id(true);

@@ -8,6 +8,7 @@
 
 include_once('db.inc.php');
 include_once('util.php');
+
 function ierg4210_login(){
     if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
         throw new Exception("invalid-email");
@@ -28,26 +29,29 @@ function ierg4210_login(){
             $isAdmin = $r['isAdmin'];
         }
     }
-    $saltedpassword = hash_hmac('sha256',$password,$salt);
+    $options = [
+        'salt' => $salt, //write your own code to generate a suitable salt
+        'cost' => 12 // the default cost is 10
+    ];
+    $saltedpassword = password_hash($password, PASSWORD_DEFAULT, $options);
     if($saltedpassword==$dbpassword){
         session_start();
         session_regenerate_id(true);
-        if($isAdmin){
-            $exp = time()+3600*24*3;
-            $token = array(
+        $exp = time()+3600*24*3;
+
+        $saltedpassword = password_hash($exp.$dbpassword, PASSWORD_DEFAULT, $options);
+        $token = array(
                 'em' => $email,
                 'exp' => $exp,
-                'k' => hash_hmac('sha256',$exp.$dbpassword,$salt));
+                'k' => $saltedpassword);
             setcookie('auth',json_encode($token),$exp,'/','',false,true);
             $_SESSION['auth']  =$token;
+        if($isAdmin)
             header("Location:../admin.php");
-            exit();
-        }
         else
             header("Location:../index.php");
         exit();
     }
-
     header('Content-Type: text/html; charset=utf-8');
     echo 'Incorrect email or password. <br/><a href="javascript:history.back();">Back to login page.</a>';
     exit();
