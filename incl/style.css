@@ -1,6 +1,51 @@
 #itemlist input{
 	width:5%;
 }
+#welcome{
+	float:left
+}
+#loginInfo{
+	font-size:20px;
+}
+.topmenu{
+	top:0;
+	position:fixed;
+	font-size:2.5vw;
+	background-color:black;
+	color:white;
+	right: 0;
+	left: 0;
+	height:8%;
+	text-align:center;
+}
+.topmenu ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #333;
+
+}
+
+.topmenu li {
+	float: right;
+	margin-right: 10px;
+}
+.topmenu li a {
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+.topmenu li a:hover {
+	background-color: #111;
+}
+.topmenu .active {
+	background-color: #4CAF50;
+}
 #Total{
 	font-size:15px;
 	font-weight: bold;
@@ -14,6 +59,18 @@
 	height:5%;
 	border-bottom: 1px solid black;
 	width: 35%;
+}
+.login{
+	z-index:2;
+	position:absolute;
+	top:12%;
+	left:77%;
+	overflow: auto;
+	width: 50%;
+	height: 50%;
+	padding:0;
+	list-style:none;
+	margin:0;
 }
 .shoppingcart{
 	z-index:2;
@@ -146,7 +203,7 @@ li img{
 	height:90%;
 	left:0;
 	right:90%;
-	top:10.8%;
+	top:8.9%;
 	bottom:15%;
 	background-color:paleturquoise;
 }
@@ -160,4 +217,21 @@ li img{
 	background-color:black;
 	color:white;
 	text-align:center;
+}
+#myCanvas{
+	position:absolute;
+	right: 20%;
+	bottom: 14%;
+	left: 25%;
+	background: #eee;
+}
+#gametitle{
+	 font-style: oblique;
+	 font-size: 2vw;
+	 position:absolute;
+	 left: 30%;
+	 top:5%;
+ }
+#gametitle span{
+	color:red;
 }

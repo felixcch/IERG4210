@@ -3,7 +3,7 @@
     var ui = window.ui = (window.ui || {});
     var cart = ui.cart = (ui.cart || {});
     productlist = [];
-    myLib.get({action: 'prod_fetchall'}, function (json) {
+    myLib.fetch({action: 'prod_fetchall'}, function (json) {
         for (var options = [], listItems = [],
                  i = 0, prod; prod = json[i]; i++) {
             productlist[prod.pid] = prod.price;
@@ -44,7 +44,7 @@
         el('shoppingitemlist').innerHTML = '';
         for (var k in shoppinglist) {
             (function (k) {
-                myLib.get({action: 'prod_fetch', pid: parseInt(k)}, function (json) {
+                myLib.fetch({action: 'prod_fetch', pid: parseInt(k)}, function (json) {
                     // loop over the server response json
                     //   the expected format (as shown in Firebug):
                     var listItems = [], i = 0, prod;

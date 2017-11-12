@@ -100,7 +100,6 @@
             id = target.parentNode.id.replace(/^prod/, ''),
             name = target.parentNode.querySelector('.name').innerHTML;
         // handle the delete click
-        alert(id);
         if ('delete' === target.className) {
             confirm('Sure?') && myLib.post({action: 'prod_delete', pid: id}, function(json){
                 alert('"' + name + '" is deleted successfully!');

@@ -12,6 +12,7 @@ String.prototype.escapeQuotes = function() {
 	return this.replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 };
 
+
 // To add a global function el as a shortcut to getElementById()
 window.el = function(A) {
 	A = document.getElementById(A);
@@ -132,6 +133,11 @@ function load(el, catid) {
 		param.rnd =  new Date().getTime(); // to avoid caching in IE
 		myLib.processJSON('lib/admin-process.php?' + encodeParam(param), null, successCallback);
 	};
+    myLib.fetch = function(param, successCallback) {
+        param = param || {};
+        param.rnd =  new Date().getTime(); // to avoid caching in IE
+        myLib.processJSON('lib/index-process.php?' + encodeParam(param), null, successCallback);
+    };
 	// To send an action to the admin-process.php over AJAX
 	myLib.post = function(param, successCallback) {
 		myLib.processJSON('lib/admin-process.php?rnd=' + new Date().getTime(), param, successCallback, {method:'POST'});

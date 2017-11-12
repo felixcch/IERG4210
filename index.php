@@ -5,14 +5,15 @@
 <link href="incl/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<?php
-readfile('html/header.html');
-?>
+<?php include_once('incl/header.php'); ?>
 <div id="nav_up" class="nav-menu">
     <a href="index.php"">Home</a>
 </div>
+<div id="Login" class ="login">
+    <a href="login.php">Login</a>
+</div>
 <div id="shoppingcart" class="shoppingcart">
-    <p id="shoppinglist">Shopping List Total:$ <input id="Total" type="number" value=0 readonly/></p>
+    <p id="shoppinglist">Shopping List Total:$ <input id="Total" type="number" value=0 readonly/> <input type="hidden" name ="nonce" value="<?php include_once('lib/util.php');echo ierg4210_csrf_getNonce('buy');?>"/></p>
     <ul id="shoppingitemlist">
 
     </ul>
@@ -27,7 +28,7 @@ readfile('html/header.html');
     <ul id="nav_left">
     </ul>
 </nav>
-<?php readfile( 'html/footer.html')?>
+<?php readfile( 'incl/footer.html')?>
 <script type="text/javascript" src="incl/myLib.js"></script>
 <script type="text/javascript" src="incl/index.js"></script>
 <script type="text/javascript" src="incl/shoppinglist.js"></script>
