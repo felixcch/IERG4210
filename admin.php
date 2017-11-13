@@ -24,7 +24,7 @@ echo "You are logged as : ". $auth['email'];
 <section id="categoryPanel">
 	<fieldset>
 		<legend>New Category</legend>
-		<form id="cat_insert" method="POST" action="lib/admin-process.php?<?php echo($action='cat_insert');?>" onsubmit="return false;">
+		<form id="cat_insert" method="POST" action="lib/admin-process.php?action=<?php echo($action='cat_insert');?>" onsubmit="return false;">
 			<label for="cat_insert_name">Name</label>
 			<div><input id="cat_insert_name" type="text" name="name" required="true" pattern="^[\w\- ]+$" /></div>
             <input type="hidden" name ="nonce" value="<?php echo ierg4210_csrf_getNonce($action);?>"/>
@@ -39,7 +39,7 @@ echo "You are logged as : ". $auth['email'];
 <section id="categoryEditPanel" class="hide">
 	<fieldset>
 		<legend>Editing Category</legend>
-		<form id="cat_edit" method="POST" action="lib/admin-process.php?<?php echo($action='cat_edit');?>" onsubmit="return false;">
+		<form id="cat_edit" method="POST" action="lib/admin-process.php?action=<?php echo($action='cat_edit');?>" onsubmit="return false;">
 			<label for="cat_edit_name">Name</label>
 			<div><input id="cat_edit_name" type="text" name="name" required="true" pattern="^[\w\- ]+$" /></div>
 			<input type="hidden" id="cat_edit_catid" name="catid" />
@@ -52,7 +52,7 @@ echo "You are logged as : ". $auth['email'];
 <section id="productPanel">
 	<fieldset>
 		<legend>New Product</legend>
-		<form id="prod_insert" method="POST" action="lib/admin-process.php?<?php echo($action='prod_insert');?>" onsubmit="return false;" enctype="multipart/form-data">
+		<form id="prod_insert" method="POST" action="lib/admin-process.php?action=<?php echo($action='prod_insert');?>" onsubmit="return false;" enctype="multipart/form-data">
 			<label for="prod_insert_catid">Category *</label>
 			<div><select id="prod_insert_catid" name="catid" required="true"></select></div>
 
@@ -78,7 +78,7 @@ echo "You are logged as : ". $auth['email'];
 		<fieldset>
 			<legend >Editing Product: <span id="prod_to_edit"></span></legend>
 
-			<form id="prod_edit" method="POST" action="lib/admin-process.php?<?php echo($action='prod_edit');?>" onsubmit="return false;" enctype="multipart/form-data">
+			<form id="prod_edit" method="POST" action="lib/admin-process.php?action=<?php echo($action='prod_edit');?>" onsubmit="return false;" enctype="multipart/form-data">
 				<input type="hidden" id="prod_edit_pid" name="epid" />
 				<label for="prod_edit_catid"> Category* </label>
 				<div><select id="prod_edit_catid" name="ecatid"></select></div>
