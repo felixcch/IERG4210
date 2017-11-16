@@ -9,9 +9,6 @@
 <div id="nav_up" class="nav-menu">
     <a href="index.php"">Home</a>
 </div>
-<div id="Login" class ="login">
-    <a href="login.php">Login</a>
-</div>
 <div id="shoppingcart" class="shoppingcart">
     <p id="shoppinglist">Shopping List Total:$ <input id="Total" type="number" value=0 readonly/> <input type="hidden" name ="nonce" value="<?php include_once('lib/util.php');echo ierg4210_csrf_getNonce('buy');?>"/></p>
     <ul id="shoppingitemlist">

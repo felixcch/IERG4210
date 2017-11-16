@@ -1,12 +1,13 @@
 
 <?php
+session_start();
 include_once('lib/util.php');
 $auth = ierg4210_validateCookie();
 if(!$auth) {header("Location:login.php");}
 else{
-    if(!$auth['isAdmin']) header("Location:index.php");
+    //if(!$auth['isAdmin']) header("Location:index.php");
 }
-echo "You are logged as : ". $auth['email'];
+echo "You are logged as : ". $auth['em'];
 ?>
 
 <html>
@@ -27,7 +28,7 @@ echo "You are logged as : ". $auth['email'];
 		<form id="cat_insert" method="POST" action="lib/admin-process.php?action=<?php echo($action='cat_insert');?>" onsubmit="return false;">
 			<label for="cat_insert_name">Name</label>
 			<div><input id="cat_insert_name" type="text" name="name" required="true" pattern="^[\w\- ]+$" /></div>
-            <input type="hidden" name ="nonce" value="<?php echo ierg4210_csrf_getNonce($action);?>"/>
+            <input type="hidden" name ="cat_insert_nonce" value="<?php echo ierg4210_csrf_getNonce($action);?>"/>
 			<input type="submit" value="Submit" />
 		</form>
 	</fieldset>
@@ -44,7 +45,7 @@ echo "You are logged as : ". $auth['email'];
 			<div><input id="cat_edit_name" type="text" name="name" required="true" pattern="^[\w\- ]+$" /></div>
 			<input type="hidden" id="cat_edit_catid" name="catid" />
 			<input type="submit" value="Submit" /> <input type="button" id="cat_edit_cancel" value="Cancel" />
-            <input type="hidden" name ="nonce" value="<?php echo ierg4210_csrf_getNonce($action);?>"/>
+            <input type="hidden" name ="cat_edit_nonce" value="<?php echo ierg4210_csrf_getNonce($action);?>"/>
 		</form>
 	</fieldset>
 </section>
@@ -67,7 +68,7 @@ echo "You are logged as : ". $auth['email'];
 
 			<label for="prod_insert_name">Image *</label>
 			<div><input id="insert_file" type="file" name="file" required="true" accept="image/jpeg,image/png,image/gif" /></div>
-            <input type="hidden" name ="nonce" value="<?php echo ierg4210_csrf_getNonce($action);?>"/>
+            <input type="hidden" name ="prod_insert_nonce" value="<?php echo ierg4210_csrf_getNonce($action);?>"/>
 			<input type="submit" value="Submit" />
 		</form>
 	</fieldset>
@@ -92,7 +93,7 @@ echo "You are logged as : ". $auth['email'];
 
 				<label for="prod_edit_file"> Image*</label>
 				<div><input id ='prod_edit_file' type="file" name="file"  accept="image/jpeg,image/png,image/gif" /></div>
-                <input type="hidden" name ="nonce" value="<?php echo ierg4210_csrf_getNonce($action);?>"/>
+                <input type="hidden" name ="prod_edit_nonce" value="<?php echo ierg4210_csrf_getNonce($action);?>"/>
 				<input type="submit" value="Submit" /><input type="button" id="prod_edit_cancel" value="Cancel" />
 			</form>
 		</fieldset>

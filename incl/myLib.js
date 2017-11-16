@@ -142,7 +142,11 @@ function load(el, catid) {
 	myLib.post = function(param, successCallback) {
 		myLib.processJSON('lib/admin-process.php?rnd=' + new Date().getTime(), param, successCallback, {method:'POST'});
 	};
-
+    myLib.logout =function(param, successCallback) {
+        param = param || {};
+        param.rnd =  new Date().getTime(); // to avoid caching in IE
+        myLib.processJSON('lib/auth-process.php?action=logout&' + encodeParam(param), null, successCallback);
+    };
 	// To validate if a form passes the client-side restrictions
 	myLib.validate = function(form) {
 		// Looping over every form control incl <input>, <textarea>, and <select>

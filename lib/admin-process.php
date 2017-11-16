@@ -6,6 +6,7 @@ if(!$auth) {header("Location:login.php");}
 else{
     if(!$auth['isAdmin']) header("Location:index.php");
 }
+
 function ierg4210_cat_fetchall() {
     // DB manipulation
     global $db;
@@ -31,7 +32,11 @@ function ierg4210_prod_fetch(){
     if ($q->execute(array($pid)))
         return $q->fetchAll();
 }
+
 function ierg4210_cat_insert() {
+    if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['nonce123'])){
+        throw new exception("CSRF-attack");
+    }
     if (!preg_match('/^[\w\- ]+$/', $_POST['name']))
         throw new Exception("invalid-name");
 	// DB manipulation
@@ -42,6 +47,9 @@ function ierg4210_cat_insert() {
 }
 
 function ierg4210_cat_edit() {
+    if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['cat_edit_nonce'])){
+        throw new exception("CSRF-attack");
+    }
     if (!preg_match('/^[\w\- ]+$/', $_POST['name']))
         throw new Exception("invalid-name");
     if (!preg_match('/^\d*$/', $_POST['catid']))
@@ -52,6 +60,7 @@ function ierg4210_cat_edit() {
 }
 
 function ierg4210_cat_delete() {
+
     if (!preg_match('/^\d*$/', $_POST['catid']))
         throw new Exception("invalid-catid");
 	// input validation or sanitization
@@ -70,6 +79,9 @@ function ierg4210_prod_insert() {
 	// DB manipulation
 	global $db;
 	$db = ierg4210_DB();
+    if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['prod_insert_nonce'])){
+        throw new exception("CSRF-attack");
+    }
 	if (!preg_match('/^\d*$/', (int)  $_POST['catid']))
 		throw new Exception("invalid-catid");
 	$_POST['catid'] = (int) $_POST['catid'];
@@ -112,7 +124,9 @@ function ierg4210_prod_edit()
 {
     global $db;
     $db = ierg4210_DB();
-
+    if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['prod_edit_nonce'])){
+        throw new exception("CSRF-attack");
+    }
     if (!preg_match('/^\d*$/', $_POST['ecatid']))
         throw new Exception("invalid-catid");
     if (!preg_match('/^\d*$/', $_POST['epid']))

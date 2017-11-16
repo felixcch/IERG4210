@@ -10,12 +10,14 @@ function ierg4210_validateCookie()
 {
     if (!empty($_SESSION['auth']))
     {
-        session_start();
         session_regenerate_id(true);
-        return $_SESSION['auth']['em'];
+        return $_SESSION['auth'];
     }
     if (!empty($_COOKIE['auth'])) {
         if ($t = json_decode(stripslashes($_COOKIE['auth']), true)) {
+            if (!filter_var($t['em'], FILTER_VALIDATE_EMAIL)) {
+                throw new Exception("Invalid cookie");
+            }
             if (time() > $t['exp']) return false;
             global $db;
             $db = ierg4210_DB();
@@ -28,13 +30,9 @@ function ierg4210_validateCookie()
                 ];
                 $realk = password_hash($t['exp'].$r['password'], PASSWORD_DEFAULT, $options);
                 if ($realk == $t['k']) {
-                    session_start();
                     session_regenerate_id(true);
                     $_SESSION['auth'] = $t;
-                    return array(
-                        'email' => $t['em'],
-                        'isAdmin' => $r['isAdmin']);
-
+                    return $t;
                 }
             }
 
@@ -43,22 +41,24 @@ function ierg4210_validateCookie()
     return false;
 }
 
-function ierg4210_getUser(){
+function ierg4210_getUserInfo(){
     $auth=ierg4210_validateCookie();
-    if(!$auth) return 'You are not logged in  <br> Please login';
+    if(!$auth) return 'Hello  <br> Visitor';
     else{
-        return "You are logged as:<br>". $auth['email'];
+        return "Hello <br>". $auth['em'];
     }
 }
 function ierg4210_csrf_getNonce($action){
+    session_start();
     $nonce = uniqid(mt_rand(),true);
     if (!isset($_SESSION['csrf_nonce']))
         $_SESSION['csrf_nonce'] = array();
     $_SESSION['csrf_nonce'][$action] = $nonce;
-    return $nonce;
+    return $_SESSION['csrf_nonce'][$action];
 }
 function ierg4210_csrf_verifyNonce($action, $nonce){
     // We assume that $REQUEST['action'] is already validated
+    session_start();
     if (isset($nonce) && $_SESSION['csrf_nonce'][$action] == $nonce) {
         if ($_SESSION['auth']==null)
             unset($_SESSION['csrf_nonce'][$action]);
