@@ -165,4 +165,4 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
-//draw();
+draw();

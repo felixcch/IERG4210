@@ -8,8 +8,15 @@
 
 include_once('db.inc.php');
 include_once('util.php');
-
+function ierg4210_logout(){
+    session_destroy();
+    setcookie('auth',null,time()-3600,'/','',false,true);
+    return true;
+}
 function ierg4210_login(){
+    if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['nonce'])){
+        throw new exception("CSRF-attack");
+    }
     if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
         throw new Exception("invalid-email");
     if (!preg_match('/^\w*$/', $_POST['password']))
@@ -22,7 +29,11 @@ function ierg4210_login(){
     $q = $db->prepare("SELECT password,salt,isAdmin FROM user WHERE email=?;");
     if($q->execute(array($email))) {
         $result = $q->fetchAll();
-        if(empty($result)) return false;
+        if(empty($result)){
+            header('Content-Type: text/html; charset=utf-8');
+            echo 'Incorrect email or password. <br/><a href="javascript:history.back();">Back to login page.</a>';
+            exit();
+        };
         foreach($result as $r){
             $salt = $r['salt'];
             $dbpassword = $r['password'];
@@ -38,12 +49,12 @@ function ierg4210_login(){
         session_start();
         session_regenerate_id(true);
         $exp = time()+3600*24*3;
-
         $saltedpassword = password_hash($exp.$dbpassword, PASSWORD_DEFAULT, $options);
         $token = array(
                 'em' => $email,
                 'exp' => $exp,
-                'k' => $saltedpassword);
+                'k' => $saltedpassword,
+                'isAdmin'=>true);
             setcookie('auth',json_encode($token),$exp,'/','',false,true);
             $_SESSION['auth']  =$token;
         if($isAdmin)
