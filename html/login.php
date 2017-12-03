@@ -14,7 +14,7 @@
             <input type="hidden" name ="nonce" value="<?php include('lib/util.php');echo ierg4210_csrf_getNonce($action);?>"/>
             <input id='submit' class="btn btn-lg btn-primary btn-block btn-signin" type="submit" value="Sign in" />
         </form><!-- /form -->
-        <a id="forgot" href="resetpwd.php" class="forgot-password">
+        <a id="forgot" href="forgotpwd.php" class="forgot-password">
             Forgot the password?
         </a>
         <a id="back" href="index.php">Back</a>
