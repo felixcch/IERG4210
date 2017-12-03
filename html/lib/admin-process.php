@@ -108,13 +108,13 @@ function ierg4210_prod_insert() {
 	$q = $db->prepare($sql);
 	// The lastInsertId() function returns the pid (primary key) resulted by the last INSERT command
 	// Copy the uploaded file to a folder which can be publicly accessible at incl/img/[pid].jpg
-    if($q->execute(array($_POST['catid'],$_POST['name'],$_POST['price'],$_POST['description']))) {
-        if ($_FILES["file"]["error"] == 0
-            && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png" || $_FILES["file"]["type"] == "image/gif")
-            //&& (mime_content_type($_FILES["file"]["tmp_name"])=="image/jpeg" || mime_content_type($_FILES["file"]["tmp_name"])=="image/png"||mime_content_type($_FILES["file"]["type"])=="tmp_name/gif")
-            && $_FILES["file"]["size"] < 5000000) {
+    if ($_FILES["file"]["error"] == 0
+        && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png" || $_FILES["file"]["type"] == "image/gif")
+        && getimagesize($_FILES['file']['tmp_name'])
+        //&& (mime_content_type($_FILES["file"]["tmp_name"])=="image/jpeg" || mime_content_type($_FILES["file"]["tmp_name"])=="image/png"||mime_content_type($_FILES["file"]["type"])=="tmp_name/gif")
+        && $_FILES["file"]["size"] < 5000000) {
+        if($q->execute(array($_POST['catid'],$_POST['name'],$_POST['price'],$_POST['description']))) {
             $lastId = $db->lastInsertId();
-            // Note: Take care of the permission of destination folder (hints: current user is apache)
             if (move_uploaded_file($_FILES['file']['tmp_name'], getcwd() . "/../img/" . $lastId . ".jpg")) {
                 // redirect back to original page; you may comment it during debug
                 header('Location:../admin.php');
@@ -122,13 +122,21 @@ function ierg4210_prod_insert() {
             }
         }
         else{
-            header('Content-Type: text/html; charset=utf-8');
-            echo 'Invalid file detected. <br/><a href="javascript:history.back();">Back to admin panel.</a>';
+            echo 'Fail to insert. <br/><a href="javascript:history.back();">Back to admin panel.</a>';
+            exit();
+        }
+        // Note: Take care of the permission of destination folder (hints: current user is apache)
+        if (move_uploaded_file($_FILES['file']['tmp_name'], getcwd() . "/../img/" . $lastId . ".jpg")) {
+            // redirect back to original page; you may comment it during debug
+            header('Location:../admin.php');
             exit();
         }
     }
-	// Only an invalid file will result in the execution below
-	// To replace the content-type header which was json and output an error message
+    else{
+        header('Content-Type: text/html; charset=utf-8');
+        echo 'Invalid file detected. <br/><a href="javascript:history.back();">Back to admin panel.</a>';
+        exit();
+    }
     header('Content-Type: text/html; charset=utf-8');
     echo 'Fail to insert. <br/><a href="javascript:history.back();">Back to admin panel.</a>';
     exit();
@@ -171,6 +179,7 @@ function ierg4210_prod_edit()
         }
         if ($_FILES["file"]["error"] == 0
             && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png" || $_FILES["file"]["type"] == "image/gif")
+            && getimagesize($_FILES['file']['tmp_name'])
             //&& (mime_content_type($_FILES["file"]["tmp_name"])=="image/jpeg" || mime_content_type($_FILES["file"]["tmp_name"])=="image/png"||mime_content_type($_FILES["file"]["type"])=="tmp_name/gif")
             && $_FILES["file"]["size"] < 5000000) {
             $q->execute(array($_POST['epid']));

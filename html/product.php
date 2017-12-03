@@ -12,10 +12,22 @@ include('incl/header.php');
     <a href="index.php"">Home</a>
 </div>
 <div id="shoppingcart" class="shoppingcart">
-    <p id="shoppinglist">Shopping List Total:$ <input id="Total" type="number" value=0 min=0 readonly/></p>
-    <ul id="shoppingitemlist">
-    </ul>
-    <input type="submit" value="Checkout" />
+    <p id="shoppinglist">Shopping List Total:$
+        <input id="Total" type="number" value=0 readonly/>
+    </p>
+    <form id="cart" method ="POST" action="https://www.sandbox.paypal.com/cgi-bin/webscr" onsubmit="return false">
+        <!--<input type="hidden" name ="nonce" value="<?php echo ierg4210_csrf_getNonce('buy');?>"/>!-->
+        <ul id="shoppingitemlist">
+        </ul>
+        <input type="hidden" name="business" value="felixchouch-facilitator@gmail.com">
+        <input type="hidden" name="cmd" value="_cart" />
+        <input type="hidden" name="upload" value="1" />
+        <input type="hidden" name="currency_code" value="HKD" />
+        <input type="hidden" name="charset" value="utf-8" />
+        <input type="hidden" name="custom" value="0" />
+        <input type="hidden" name="invoice" value="0" />
+        <input type="submit" value="Checkout" />
+    </form>
 </div>
 <div id="content" class="content">
 <div id='product_detail' class="product_detail">

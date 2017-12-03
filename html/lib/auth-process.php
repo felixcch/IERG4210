@@ -12,7 +12,92 @@ include_once('../external/PHPMailer/PHPMailerAutoload.php');
 function ierg4210_getauthtoken(){
     return  array(ierg4210_validateCookie());
 }
+function ierg4210_verifyResetNonce(){
+    if (!preg_match('/^[\w\.]+$/', $_GET['nonce']))
+        throw new Exception("invalid-nonce");
+    $nonce = $_GET['nonce'];
+
+    global $db;
+    $db = ierg4210_DB();
+    $q = $db->prepare("SELECT 1 FROM resetpwd WHERE nonce=? AND finished = 0;");
+    if($q->execute(array($nonce))) {
+        $result = $q->fetchAll();
+        if(empty($result)) {
+            return array(
+                Array
+                ('verify' => false
+                )
+            );
+        }
+        return array(
+            Array
+            ( 'verify'=>true
+            )
+        );
+    }
+
+}
 function ierg4210_resetpwd(){
+   /* if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['csrf_nonce'])){
+        throw new exception("CSRF-attack");
+    }*/
+    if (!preg_match('/^[\w\.]+$/', $_POST['reset_nonce']))
+        throw new Exception("invalid-nonce");
+
+    if (!preg_match('/^\w*$/', $_POST['new_password']))
+        throw new Exception("invalid-password");
+    $new_password=$_POST['new_password'];
+    $nonce = $_POST['reset_nonce'];
+    $db = ierg4210_DB();
+    $q = $db->prepare("SELECT username FROM resetpwd WHERE nonce=? AND finished=0;");
+    if($q->execute(array($nonce))) {
+        $result = $q->fetchAll();
+        if(empty($result)){
+            header('Content-Type: text/html; charset=utf-8');
+            echo 'Invalid nonce. <br/><a href="../index.php">Back to login page.</a>';
+            error_log( "Invalid nonce " ."\n", 3, "/var/www/Forgotpwd_log.txt");
+            exit();
+        };
+        foreach($result as $r) {
+            $username = $r['username'];
+            error_log( "username = ".$username ."\n", 3, "/var/www/Forgotpwd_log.txt");
+            $q = $db->prepare("SELECT salt FROM user WHERE email=?;");
+            if($q->execute(array($username))) {
+                $result = $q->fetchAll();
+                if(empty($result)){
+                    header('Content-Type: text/html; charset=utf-8');
+                    echo 'Invalid nonce. <br/><a href="../index.php">Back to login page.</a>';
+                    error_log( "Invalid nonce " ."\n", 3, "/var/www/Forgotpwd_log.txt");
+                    exit();
+                };
+                foreach($result as $k) {
+                    $salt = $k['salt'];
+                    $options = [
+                        'salt' => $salt, //write your own code to generate a suitable salt
+                        'cost' => 12 // the default cost is 10
+                    ];
+                    $saltedpassword = password_hash($new_password, PASSWORD_DEFAULT, $options);
+                    $q = $db->prepare("UPDATE  user SET password= ? WHERE email = ?;");
+                    error_log( " Updated user: ".$username ."\n", 3, "/var/www/Forgotpwd_log.txt");
+                    if($q->execute(array($saltedpassword,$username))){
+                        $p = $db->prepare("UPDATE  resetpwd SET finished= 1 WHERE username = ? AND nonce =?;");
+                        if($p->execute(array($username,$nonce))){
+                            date_default_timezone_set('Asia/Hong_Kong');
+                            $date = date('m/d/Y h:i:s a', time());
+                            error_log("[".$date."]" . " User password Reset finished. Username: ".$username ."\n", 3, "/var/www/Forgotpwd_log.txt");
+                            return array(
+                                array(
+                                    "message"=>"Successful"
+                                )
+                            );
+                        }
+                    };
+                }
+            }
+        }
+    }
+}
+function ierg4210_forgotpwd(){
     if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['nonce'])){
         throw new exception("CSRF-attack");
     }
@@ -25,8 +110,12 @@ function ierg4210_resetpwd(){
     if($q->execute(array($email))) {
         $result = $q->fetchAll();
         if(empty($result)){
-            header('Content-Type: text/html; charset=utf-8');
-            echo 'Incorrect email . <br/><a href="javascript:history.back();">Back</a>';
+            global $db;
+            $db = ierg4210_DB();
+            $ip = ierg4210_getRealIpAddr();
+            $q = $db->prepare("INSERT OR REPLACE INTO login_attempt VALUES ((?), (SELECT CASE  WHEN  (SELECT Attempt from login_attempt WHERE ipv4=(?)) IS NOT NULL THEN Attempt ELSE 0 END  from login_attempt WHERE ipv4 = (?)) +1,CURRENT_TIMESTAMP) ;");
+            $q->execute(array(ip2long($ip),ip2long($ip),ip2long($ip )));
+            header("Location: ../forgotpwd.php?login=fail");
             exit();
         };
     }
@@ -42,18 +131,23 @@ function ierg4210_resetpwd(){
     $mail->SetFrom("no-reply@secure.s16.ierg4210.ie.cuhk.edu.hk");
     $mail->Subject = "Reset your password from Felix's Online Shop";
     session_start();
-    $link =
-    $mail->Body = "Dear user\n
+    $nonce = uniqid(mt_rand(),true);
+    $q = $db->prepare("INSERT INTO resetpwd (username,nonce,rdate,finished) VALUES (?,?,CURRENT_TIMESTAMP ,?)");
+    $q->execute(array($email,$nonce,0));
+    $mail->Body = "Dear user.
           Please click the following link to reset your password:
-          ";
-    $mail->AddAddress("ierg4210s16@gmail.com");
-
+          https://secure.s16.ierg4210.ie.cuhk.edu.hk/resetpwd.php?nonce=".$nonce."";
+    $mail->AddAddress($email);
+    date_default_timezone_set('Asia/Hong_Kong');
+    $date = date('m/d/Y h:i:s a', time());
     if(!$mail->Send()) {
-        echo "Mailer Error: " . $mail->ErrorInfo;
+        error_log("[".$date."]" . " Forgotpwd Error, username: ".$email."\nError:".$mail->ErrorInfo."\n", 3, "/var/www/Forgotpwd_log.txt");
     } else {
-        echo "Message has been sent";
+        error_log("[".$date."]" . " Forgotpwd email sent. Username: ".$email, 3, "/var/www/Forgotpwd_log.txt");
+        return array((array(
+            'message'=>'Successful'
+        )));
     }
-
 }
 function ierg4210_ChangePassword(){
     if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['nonce'])){
@@ -105,7 +199,6 @@ function ierg4210_ChangePassword(){
         }
     }
 }
-
 function ierg4210_logout(){
     session_start();
     session_destroy();
@@ -131,12 +224,13 @@ function ierg4210_verifyIp(){
             $attempt = $r['Attempt'];
             $attemptleft = 3 - $attempt;
             $lastlogin = $r['lastlogin'];
-            if($attemptleft<=0 && time() - strtotime($lastlogin) > 1){
+            if($attemptleft<=0 && time() - strtotime($lastlogin) >24*3600){
                 $q = $db->prepare("UPDATE login_attempt  SET Attempt = 0 WHERE ipv4 = (?) ;");
                 $q->execute(array(ip2long($ip)));
                 return array(
                     Array
-                    ( 'verify'=>true
+                    ( 'verify'=>true,
+                      'attempleft'=>$attemptleft
                     )
                 );
             }
@@ -158,18 +252,23 @@ function ierg4210_verifyIp(){
         );
     }
 }
-
 function ierg4210_loginfail(){
-            global $db;
-            $db = ierg4210_DB();
-            $ip = ierg4210_getRealIpAddr();
-            $q = $db->prepare("INSERT OR REPLACE INTO login_attempt VALUES ((?), (SELECT CASE  WHEN  (SELECT Attempt from login_attempt WHERE ipv4=(?)) IS NOT NULL THEN Attempt ELSE 0 END  from login_attempt WHERE ipv4 = (?)) +1,CURRENT_TIMESTAMP) ;");
-            $q->execute(array(ip2long($ip),ip2long($ip),ip2long($ip )));
-            $login = ierg4210_verifyIp();
-           # header('Content-Type: text/html; charset=utf-8');
-           # echo 'Incorrect email or password. Attempt left :' . $login[0]['attemptleft'].' <br/><a href="javascript:history.back();">Back to login page.</a>';
-            header("Location: ../login.php?login=fail&attemptleft=" . $login[0]['attemptleft']);
-            exit();
+    global $db;
+    $db = ierg4210_DB();
+    $ip = ierg4210_getRealIpAddr();
+    $q = $db->prepare("INSERT OR REPLACE INTO login_attempt VALUES ((?), (SELECT CASE  WHEN  (SELECT Attempt from login_attempt WHERE ipv4=(?)) IS NOT NULL THEN Attempt ELSE 0 END  from login_attempt WHERE ipv4 = (?)) +1,CURRENT_TIMESTAMP) ;");
+    $q->execute(array(ip2long($ip),ip2long($ip),ip2long($ip )));
+    $login = ierg4210_verifyIp();
+    # header('Content-Type: text/html; charset=utf-8');
+    # echo 'Incorrect email or password. Attempt left :' . $login[0]['attemptleft'].' <br/><a href="javascript:history.back();">Back to login page.</a>';
+    date_default_timezone_set('Asia/Hong_Kong');
+    $date = date('m/d/Y h:i:s a', time());
+    error_log("[".$date."]" . " User fails to login. Input username:".$_POST['email'] .", Input password:".$_POST['password']."\n ", 3, "/var/www/login_log.txt");
+    return array(
+        array(
+            'login'=>'fail'
+        )
+    );
 }
 function ierg4210_login(){
     $verifyip = ierg4210_verifyIp();
@@ -192,7 +291,7 @@ function ierg4210_login(){
     if($q->execute(array($email))) {
         $result = $q->fetchAll();
         if(empty($result)){
-            ierg4210_loginfail();
+            return ierg4210_loginfail();
         };
         foreach($result as $r){
             $salt = $r['salt'];
@@ -206,25 +305,38 @@ function ierg4210_login(){
     ];
     $saltedpassword = password_hash($password, PASSWORD_DEFAULT, $options);
     if($saltedpassword==$dbpassword){
+        date_default_timezone_set('Asia/Hong_Kong');
+        $date = date('m/d/Y h:i:s a', time());
+        error_log("[".$date."]" . " Sucessful login.  username:".$_POST['email'] ."\n ", 3, "/var/www/login_log.txt");
         session_start();
         session_regenerate_id(true);
         $exp = time()+3600*24*3;
         $saltedpassword = password_hash($exp.$dbpassword, PASSWORD_DEFAULT, $options);
         $token = array(
-                'em' => $email,
-                'exp' => $exp,
-                'k' => $saltedpassword,
-                'isAdmin'=>true);
-            setcookie('auth',json_encode($token),$exp,'/','',false,true);
-            $_SESSION['auth']  =$token;
+            'em' => $email,
+            'exp' => $exp,
+            'k' => $saltedpassword,
+            'isAdmin'=>true);
+        setcookie('auth',json_encode($token),$exp,'/','',false,true);
+        $_SESSION['auth']  =$token;
         if($isAdmin)
-            header("Location:../admin.php");
+            return array(
+                array(
+                    'login'=>'Successful',
+                    'isAdmin'=>true
+                )
+            );
         else
-            header("Location:../index.php");
-        exit();
+            return array(
+                array(
+                    'login'=>'Successful',
+                    'isAdmin'=>false
+                )
+            );
     }
-    ierg4210_loginfail();
+   return  ierg4210_loginfail();
 }
+
 
 header('Content-Type: application/json');
 

@@ -38,8 +38,11 @@ function ierg4210_authbuy(){
      $salt = uniqid(mt_rand(), true);
      $merchant_email = 'felixchouch-facilitator@gmail.com';
      $string = "username:{$username},currency:{$currency},merchantemail:{$merchant_email},salt:{$salt},pid_quantity_price:{$pid_quantity_price}totalprice:{$total}";
-    error_log("string from cart: \n" . $string, 3, "/var/www/html/log-cart.txt");
      $digest = ierg4210_generateDigest($string);
+     date_default_timezone_set('Asia/Hong_Kong');
+     $date = date('m/d/Y h:i:s a', time());
+     error_log("[".$date."]" . " Cart info sent to paypal. Waiting for transaction confirmation...\n", 3, "/var/www/log.txt");
+     error_log("Digest generated: " . $string . "\n", 3, "/var/www/log.txt");
      global $db;
      $db = ierg4210_DB();
      $q=$db->prepare("INSERT INTO orders (digest,salt,username) VALUES(?,?,?)");
