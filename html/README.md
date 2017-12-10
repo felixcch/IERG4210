@@ -22,3 +22,15 @@ Phase3 done. committed to branch 3.
 
 12-11/2017
 Phase4 done
+
+22/11/2017:
+phase 5 done
+
+10/12/2017:
+Phase 6 & 7 done:
+Extension:
+1.Change password (4%)
+2.Reset password (8%)
+3.AJAX in main and product (4%)
+4.AJAX in admin file upload (3%)
+5.cookie secure and httponly flag (1%)
