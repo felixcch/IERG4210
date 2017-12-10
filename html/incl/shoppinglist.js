@@ -25,10 +25,15 @@
             alert("Please login to perform buy action");
             return false;
         }
+        var nonce =  el('cart').elements['nonce'].value;
+        if(!nonce.match(/^[\w\\.]+$/)){
+            alert("invalid nonce");
+            return false;
+        }
         cart.UpdateShoppinglist();
         el('overlay').style.display='block';
         var shoppinglist = localStorage.getItem('shoppinglist');
-        myLib.authcart({action:'authbuy',list:shoppinglist},function(json){
+        myLib.authcart({action:'authbuy',list:shoppinglist,nonce:nonce},function(json){
            var returnValue = json[0];
            el('cart').elements['custom'].value=returnValue.digest;
            el('cart').elements['invoice'].value=returnValue.invoice;
@@ -88,11 +93,11 @@
                         (function (i) {
                             inputlist[i].addEventListener('change', function () {
                                     if (!inputlist[i].value.match(/^[\d]+$/)) {
-                                        alert("You should enter integers only in Quantity");
+                                        alert("You should enter positive integers only in Quantity");
                                     }
                                     inputlist[i].value = parseInt(inputlist[i].value);
                                     var shoppinglist = JSON.parse(localStorage.getItem('shoppinglist'));
-                                    if (inputlist[i].value == 0) {
+                                    if (inputlist[i].value <= 0) {
                                         if (confirm('deleting ' + inputlist[i].name + '  in your shopping cart. Are you sure?')) {
                                             if (delete shoppinglist[inputlist[i].id.substring(1)])
                                                 alert(inputlist[i].name + ' deleted successfully');

@@ -18,7 +18,7 @@ $_SESSION['visit'] = true;
                     } else {
                     echo ' id= "logout" href = "#" onclick="return false;">logout' . '<li id="pwdchange"><a href="ChangePassword.php">Change Password</a></li>';
                       } ?></a></li>
-                <?php if($auth['isAdmin']) echo'<li><a href="admin.php">Admin</a></li>'?>
+                <?php if($auth['isAdmin']==1) echo'<li><a href="admin.php">Admin</a></li>'?>
                 <!--<li ><a class="active" href="incl/game.html">BackDoor</a></li>!-->
                 <li id="loginInfo"><?php echo ierg4210_getUserInfo();?></li>
                 <li id="visitorNum" class="hidden">Total visitor: <?php echo ierg4210_GetTotalVisitor()['num'];?></li>

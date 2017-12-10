@@ -81,19 +81,26 @@ function ierg4210_getUserInfo(){
 function ierg4210_csrf_getNonce($action){
     session_start();
     $nonce = uniqid(mt_rand(),true);
+
     if (!isset($_SESSION['csrf_nonce']))
         $_SESSION['csrf_nonce'] = array();
     $_SESSION['csrf_nonce'][$action] = $nonce;
+    date_default_timezone_set('Asia/Hong_Kong');
+    $date = date('m/d/Y h:i:s a', time());
+    error_log("[".$date."]" . " Nonce created:  ".$nonce.",action: ".$action."session [csrf_nonce][action]: ".$_SESSION['csrf_nonce'][$action]." \n", 3, "/var/www/nonce_log.txt");
+    error_log(print_r($_SESSION,true), 3, "/var/www/nonce_log.txt");
     return $_SESSION['csrf_nonce'][$action];
 }
 function ierg4210_csrf_verifyNonce($action, $nonce){
     // We assume that $REQUEST['action'] is already validated
     session_start();
-    if (isset($nonce) && $_SESSION['csrf_nonce'][$action] == $nonce) {
-        if ($_SESSION['auth']==null)
-            unset($_SESSION['csrf_nonce'][$action]);
+    if (isset($nonce) && $_SESSION['csrf_nonce'][$action] == $nonce) {   
         return true;
     }
+    date_default_timezone_set('Asia/Hong_Kong');
+    $date = date('m/d/Y h:i:s a', time());
+    error_log("[".$date."]" . " Nonce verified failed:  ".$nonce.",action: ".$action.",session [csrf_nonce][action]: ".$_SESSION['csrf_nonce'][$action]." \n", 3, "/var/www/nonce_log.txt");
+    error_log(print_r($_SESSION,true), 3, "/var/www/nonce_log.txt");
     throw new Exception('csrf-attack');
 }
 ?>

@@ -33,10 +33,10 @@
                         return false;
                     }
                         return myLib.submit(this, function (json) {
-                            var message = json[0]
+                            var message = json[0];
                             if(message.message == 'Successful'){
-                                alert("Successful password reset");
-                                window.location = 'index.php' ;
+                                alert("Successful password reset, please login again");
+                                window.location = 'login.php' ;
                             }
                         });
                     }

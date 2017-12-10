@@ -1,5 +1,22 @@
 (function(){
+    function onSuccess(googleUser) {
+        console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+    }
+    function onFailure(error) {
+        console.log(error);
+    }
+    function renderButton() {
+        gapi.signin2.render('my-signin2', {
+            'scope': 'profile email',
+            'width': 240,
+            'height': 50,
+            'longtitle': true,
+            'theme': 'dark',
+            'onsuccess': onSuccess,
+            'onfailure': onFailure
+        });
 
+    }
         el('login').onsubmit = function() {
             return myLib.submit(this, function(json) {
                   var result = json[0];
@@ -16,9 +33,9 @@
                    else if(result.login=='Successful'){
                        if(result.isAdmin==true)
                            window.location='admin.php';
-                   }
-                   else{
-                       window.location='index.php';
+                       else{
+                           window.location='index.php';
+                       }
                    }
             });
         };

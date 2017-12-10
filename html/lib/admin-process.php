@@ -2,9 +2,11 @@
 include_once('db.inc.php');
 include_once('util.php');
 $auth = ierg4210_validateCookie();
-if(!$auth) {header("Location:login.php");}
+if(!$auth) {header("Location:login.php");exit();}
 else{
-    if(!$auth['isAdmin']) header("Location:index.php");
+    if(!$auth['isAdmin']) {header("Location:index.php");
+    exit();
+}
 }
 function ierg4210_visitor_fetchall(){
     global $db;
@@ -37,7 +39,8 @@ function ierg4210_prod_fetchall() {
         return $q->fetchAll();
 }
 function ierg4210_prod_fetch(){
-
+    if (!preg_match('/^\d*$/', $_GET['pid']))
+        throw new Exception("invalid-catid");
     global $db;
     $db = ierg4210_DB();
     $pid = isset($_GET['pid'])?$_GET['pid']:1;

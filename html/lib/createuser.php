@@ -27,16 +27,7 @@ $options = [
     'salt' => $salt, //write your own code to generate a suitable salt
     'cost' => 12 // the default cost is 10
 ];
-$saltedpassword = password_hash('test123', PASSWORD_DEFAULT, $options);
-$q = $db->prepare("INSERT INTO user VALUES (2,'user1@gmail.com',(?),(?),0 )");
+$saltedpassword = password_hash('ierg4210s16test', PASSWORD_DEFAULT, $options);
+$q = $db->prepare("INSERT INTO user VALUES (2,'test@gmail.com',(?),(?),0 )");
 $result = $q->execute(array($salt,$saltedpassword));
-$salt = uniqid(mt_rand(), true);
-$options = [
-    'salt' =>$salt, //write your own code to generate a suitable salt
-    'cost' => 12 // the default cost is 10
-];
-$saltedpassword = password_hash('test123', PASSWORD_DEFAULT, $options);
-$q = $db->prepare("INSERT INTO user VALUES (3,'user2@gmail.com',(?),(?),0 )");
-$result = $q->execute(array($salt,$saltedpassword));
-echo "Success";
 ?>

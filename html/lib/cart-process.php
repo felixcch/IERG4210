@@ -20,13 +20,15 @@ function ierg4210_generateDigest($input){
 }
 
 function ierg4210_authbuy(){
-     $string = '';
      $auth = ierg4210_validateCookie();
+     if(!$auth)return false;
+     if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_GET['nonce'])){
+        throw new exception("CSRF-attack");
+    }
      $username =$auth['em'];
      $shoplist = json_decode($_GET['list']);
      $total =0;
-    $pid_quantity_price='';
-     $currentprice='';
+     $pid_quantity_price='';
      foreach($shoplist as $key => $value ){
          $productprice = ierg4210_getproductprice($key);
          $total += $productprice*$value;
@@ -38,15 +40,16 @@ function ierg4210_authbuy(){
      $salt = uniqid(mt_rand(), true);
      $merchant_email = 'felixchouch-facilitator@gmail.com';
      $string = "username:{$username},currency:{$currency},merchantemail:{$merchant_email},salt:{$salt},pid_quantity_price:{$pid_quantity_price}totalprice:{$total}";
+     $productInfo = "currency:{$currency},pid_quantity_price:{$pid_quantity_price}totalprice:{$total}";
      $digest = ierg4210_generateDigest($string);
      date_default_timezone_set('Asia/Hong_Kong');
      $date = date('m/d/Y h:i:s a', time());
-     error_log("[".$date."]" . " Cart info sent to paypal. Waiting for transaction confirmation...\n", 3, "/var/www/log.txt");
-     error_log("Digest generated: " . $string . "\n", 3, "/var/www/log.txt");
+     error_log("[".$date."]" . " Cart info sent to paypal. Waiting for transaction confirmation...\n", 3, "/var/www/IPN_log.txt");
+     error_log("Digest generated: " . $string . "\n", 3, "/var/www/IPN_log.txt");
      global $db;
      $db = ierg4210_DB();
-     $q=$db->prepare("INSERT INTO orders (digest,salt,username) VALUES(?,?,?)");
-     $q->execute(array($digest,$salt,$username));
+     $q=$db->prepare("INSERT INTO orders (digest,salt,username,productInfo) VALUES(?,?,?,?)");
+     $q->execute(array($digest,$salt,$username,$productInfo));
      $invocie =$db->lastInsertId();
      header('Content-Type: application/json');
       return array(array(

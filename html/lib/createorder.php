@@ -8,5 +8,5 @@
 $db = ierg4210_DB();
 $q = $db->prepare("DROP TABLE orders");
 $q->execute();
-$q = $db->prepare("CREATE TABLE orders ( oid INTEGER PRIMARY KEY ,tid TEXT, username TEXT,digest TEXT, salt TEXT,tdate Date)");
+$q = $db->prepare("CREATE TABLE orders ( oid INTEGER PRIMARY KEY ,tid TEXT, productInfo TEXT,username TEXT,digest TEXT, salt TEXT,tdate Date)");
 $q->execute();
