@@ -8,6 +8,13 @@
         }
         $_GET[decode(arguments[1])] = decode(arguments[2]);
     });
+    function isInt(value) {
+        return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value))
+    }
+    if(!isInt($_GET['pid'])){
+        alert('invalid-pid');
+        window.location ='index.php';
+    }
     function updateUI(pid) {
         myLib.fetch({action:'fetchprodcat',pid:parseInt(pid)}, function(json){
             // loop over the server response json

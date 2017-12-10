@@ -2,6 +2,7 @@
 <html>
 <?php session_start();?>
 <link href="incl/login.css" rel="stylesheet" type="text/css">
+<meta name="google-signin-client_id" content="1022850332637-verar4pp4647f5nlr9pk6ae40f42i9or.apps.googleusercontent.com">
 <div class="container">
     <div class="card card-container">
         <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
@@ -22,4 +23,5 @@
 </div><!-- /container -->
 <script type="text/javascript" src="incl/myLib.js"></script>
 <script type="text/javascript" src="incl/login.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
 </html>

@@ -9,6 +9,21 @@
 include_once('db.inc.php');
 include_once('util.php');
 include_once('../external/PHPMailer/PHPMailerAutoload.php');
+function ierg4210_google_sign_in(){
+    require_once '../external/Google/autoload.php';
+    $CLIENT_ID = $_POST['client_id'];
+    $id_token = $_POST['id_token'];
+    $client = new Google_Client(['client_id' => $CLIENT_ID]);
+    $payload = $client->verifyIdToken($id_token);
+    if ($payload) {
+        $userid = $payload['sub'];
+        // If request specified a G Suite domain:
+        //$domain = $payload['hd'];
+    } else {
+        return false;
+    }
+
+}
 function ierg4210_getauthtoken(){
     return  array(ierg4210_validateCookie());
 }
@@ -53,22 +68,25 @@ function ierg4210_resetpwd(){
     if($q->execute(array($nonce))) {
         $result = $q->fetchAll();
         if(empty($result)){
-            header('Content-Type: text/html; charset=utf-8');
-            echo 'Invalid nonce. <br/><a href="../index.php">Back to login page.</a>';
-            error_log( "Invalid nonce " ."\n", 3, "/var/www/Forgotpwd_log.txt");
-            exit();
+            error_log( "Invalid nonce " ."nonce=".$nonce."\n", 3, "/var/www/Forgotpwd_log.txt");
+            return array(
+                array(
+                    "message"=>"Fail"
+                )
+            );
         };
         foreach($result as $r) {
             $username = $r['username'];
-            error_log( "username = ".$username ."\n", 3, "/var/www/Forgotpwd_log.txt");
             $q = $db->prepare("SELECT salt FROM user WHERE email=?;");
             if($q->execute(array($username))) {
                 $result = $q->fetchAll();
                 if(empty($result)){
-                    header('Content-Type: text/html; charset=utf-8');
-                    echo 'Invalid nonce. <br/><a href="../index.php">Back to login page.</a>';
-                    error_log( "Invalid nonce " ."\n", 3, "/var/www/Forgotpwd_log.txt");
-                    exit();
+                    error_log( "Invalid nonce " ."nonce=".$nonce."\n", 3, "/var/www/Forgotpwd_log.txt");
+                    return array(
+                        array(
+                            "message"=>"Fail"
+                        )
+                    );
                 };
                 foreach($result as $k) {
                     $salt = $k['salt'];
@@ -78,7 +96,6 @@ function ierg4210_resetpwd(){
                     ];
                     $saltedpassword = password_hash($new_password, PASSWORD_DEFAULT, $options);
                     $q = $db->prepare("UPDATE  user SET password= ? WHERE email = ?;");
-                    error_log( " Updated user: ".$username ."\n", 3, "/var/www/Forgotpwd_log.txt");
                     if($q->execute(array($saltedpassword,$username))){
                         $p = $db->prepare("UPDATE  resetpwd SET finished= 1 WHERE username = ? AND nonce =?;");
                         if($p->execute(array($username,$nonce))){
@@ -104,6 +121,8 @@ function ierg4210_forgotpwd(){
     if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
         throw new Exception("invalid-email");
     $email = $_POST['email'];
+    date_default_timezone_set('Asia/Hong_Kong');
+    $date = date('m/d/Y h:i:s a', time());
     global $db;
     $db = ierg4210_DB();
     $q = $db->prepare("SELECT 1 FROM user WHERE email=?;");
@@ -115,8 +134,12 @@ function ierg4210_forgotpwd(){
             $ip = ierg4210_getRealIpAddr();
             $q = $db->prepare("INSERT OR REPLACE INTO login_attempt VALUES ((?), (SELECT CASE  WHEN  (SELECT Attempt from login_attempt WHERE ipv4=(?)) IS NOT NULL THEN Attempt ELSE 0 END  from login_attempt WHERE ipv4 = (?)) +1,CURRENT_TIMESTAMP) ;");
             $q->execute(array(ip2long($ip),ip2long($ip),ip2long($ip )));
-            header("Location: ../forgotpwd.php?login=fail");
-            exit();
+            error_log("[".$date."]" . " Forgotpwd Error, username: ".$email."\nError: incorrect email", 3, "/var/www/Forgotpwd_log.txt");
+           return array(
+               array(
+               'message'=>'fail'
+
+           ));
         };
     }
     $mail = new PHPMailer(); // create a new object
@@ -129,21 +152,27 @@ function ierg4210_forgotpwd(){
     $mail->Username = "ierg4210s16@gmail.com";
     $mail->Password = "badguy74103665";
     $mail->SetFrom("no-reply@secure.s16.ierg4210.ie.cuhk.edu.hk");
-    $mail->Subject = "Reset your password from Felix's Online Shop";
+    $mail->Subject = "Reset your password from s16's Online Shop";
     session_start();
     $nonce = uniqid(mt_rand(),true);
+    $q = $db->prepare("SELECT nonce FROM resetpwd;");
+    if($q->execute()){
+        $result = $q->fetchAll();
+        foreach($result as $r) {
+            while ($nonce==$r)
+                $nonce = uniqid(mt_rand(),true);
+        }
+    }
     $q = $db->prepare("INSERT INTO resetpwd (username,nonce,rdate,finished) VALUES (?,?,CURRENT_TIMESTAMP ,?)");
     $q->execute(array($email,$nonce,0));
-    $mail->Body = "Dear user.
-          Please click the following link to reset your password:
-          https://secure.s16.ierg4210.ie.cuhk.edu.hk/resetpwd.php?nonce=".$nonce."";
+    $mail->Body = "Dear user,<br>
+          Please click the following link to reset your password for s16 website:<br>
+          https://secure.s16.ierg4210.ie.cuhk.edu.hk/resetpwd.php?nonce=".$nonce."<br> Best regards,<br> s16 Admin";
     $mail->AddAddress($email);
-    date_default_timezone_set('Asia/Hong_Kong');
-    $date = date('m/d/Y h:i:s a', time());
     if(!$mail->Send()) {
         error_log("[".$date."]" . " Forgotpwd Error, username: ".$email."\nError:".$mail->ErrorInfo."\n", 3, "/var/www/Forgotpwd_log.txt");
     } else {
-        error_log("[".$date."]" . " Forgotpwd email sent. Username: ".$email, 3, "/var/www/Forgotpwd_log.txt");
+        error_log("[".$date."]" . " Forgotpwd email sent. Username: ".$email ."\n", 3, "/var/www/Forgotpwd_log.txt");
         return array((array(
             'message'=>'Successful'
         )));
@@ -162,15 +191,29 @@ function ierg4210_ChangePassword(){
     $email=$_POST['email'];
     $old_password=$_POST['old_password'];
     $new_password=$_POST['new_password'];
+    $confirm_new_password = $_POST['confirm_new_password'];
+    if($confirm_new_password!=$new_password){
+        return array(
+            array(
+                'message'=>'Fail'
+            )
+        );
+    }
     global $db;
     $db = ierg4210_DB();
+    date_default_timezone_set('Asia/Hong_Kong');
+    $date = date('m/d/Y h:i:s a', time());
     $q = $db->prepare("SELECT password,salt FROM user WHERE email=?;");
     if($q->execute(array($email))) {
         $result = $q->fetchAll();
         if(empty($result)){
             header('Content-Type: text/html; charset=utf-8');
-            echo 'Incorrect email or password. <br/><a href="javascript:history.back();">Back to login page.</a>';
-            exit();
+            error_log("[".$date."]" . " Failure in password change.  username:".$email ."old password:".$old_password." new password:".$new_password."\n ", 3, "/var/www/Passwordchange_log.txt");
+            return array(
+                array(
+                    'message'=>'Fail'
+                )
+            );
         };
         foreach($result as $r) {
             $salt = $r['salt'];
@@ -191,12 +234,30 @@ function ierg4210_ChangePassword(){
         $saltedNewpassword = password_hash($new_password, PASSWORD_DEFAULT, $options);
         $q = $db->prepare("UPDATE user SET password = (?), salt=(?)  WHERE email=?;");
         if($q->execute(array($saltedNewpassword,$newSalt,$email))){
-            header("Location : ../index.php");
-            exit();
+            error_log("[".$date."]" . " Sucessful password changed.  username:".$email ."\n ", 3, "/var/www/Passwordchange_log.txt");
+            ierg4210_logout();
+            return array(
+                array(
+                    'message'=>'Successful'
+                )
+            );
         }
         else {
-            throw new Exception("Failed to update database");
+            error_log("[".$date."]" . " Failure in executing query.  username:".$email ."old password:".$old_password." new password:".$new_password."\n ", 3, "/var/www/Passwordchange_log.txt");
+            return array(
+                array(
+                    'message'=>'Fail'
+                )
+            );
         }
+    }
+    else{
+        error_log("[".$date."]" . " Failure in password change.Reason : incorrect old_password.  username:".$email ."old password:".$old_password." new password:".$new_password."\n ", 3, "/var/www/Passwordchange_log.txt");
+            return array(
+                array(
+                    'message'=>'Fail'
+                )
+            );
     }
 }
 function ierg4210_logout(){
@@ -224,7 +285,7 @@ function ierg4210_verifyIp(){
             $attempt = $r['Attempt'];
             $attemptleft = 3 - $attempt;
             $lastlogin = $r['lastlogin'];
-            if($attemptleft<=0 && time() - strtotime($lastlogin) >24*3600){
+            if($attemptleft<=0 && time() - strtotime($lastlogin) > 1){
                 $q = $db->prepare("UPDATE login_attempt  SET Attempt = 0 WHERE ipv4 = (?) ;");
                 $q->execute(array(ip2long($ip)));
                 return array(
@@ -316,7 +377,7 @@ function ierg4210_login(){
             'em' => $email,
             'exp' => $exp,
             'k' => $saltedpassword,
-            'isAdmin'=>true);
+            'isAdmin'=>$isAdmin);
         setcookie('auth',json_encode($token),$exp,'/','',false,true);
         $_SESSION['auth']  =$token;
         if($isAdmin)

@@ -3,9 +3,13 @@
 session_start();
 include_once('lib/util.php');
 $auth = ierg4210_validateCookie();
-if(!$auth) {header("Location:login.php");}
+if(!$auth) {header("Location:login.php");exit();}
 else{
-    if(!$auth['isAdmin']) header("Location:index.php");
+    echo $auth['isAdmin'];
+    if($auth['isAdmin']==0) {
+        header("Location:index.php");
+        exit();
+    }
 }
 echo "You are logged as : ". $auth['em'];
 ?>
@@ -18,7 +22,7 @@ echo "You are logged as : ". $auth['em'];
 </head>
 
 <body>
-<h1>IERG4210 Shop - Admin Panel <a href="index.php">Go to main page now</a>  <a href="login.php">Back to login php</a></h1>
+<h1>IERG4210 Shop - Admin Panel <a href="index.php">Go to main page now</a>  <a href="login.php">Back to login php</a> <a href="admin.php">Refresh</a></h1>
 
 <article id="main">
 

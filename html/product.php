@@ -16,7 +16,6 @@ include('incl/header.php');
         <input id="Total" type="number" value=0 readonly/>
     </p>
     <form id="cart" method ="POST" action="https://www.sandbox.paypal.com/cgi-bin/webscr" onsubmit="return false">
-        <!--<input type="hidden" name ="nonce" value="<?php echo ierg4210_csrf_getNonce('buy');?>"/>!-->
         <ul id="shoppingitemlist">
         </ul>
         <input type="hidden" name="business" value="felixchouch-facilitator@gmail.com">
@@ -26,8 +25,12 @@ include('incl/header.php');
         <input type="hidden" name="charset" value="utf-8" />
         <input type="hidden" name="custom" value="0" />
         <input type="hidden" name="invoice" value="0" />
+        <input type="hidden" name="nonce" value="<?php echo ierg4210_csrf_getNonce('cart')?>"/>
         <input type="submit" value="Checkout" />
     </form>
+</div>
+<div id="overlay" class="overlay">
+    <div id="loader"></div>
 </div>
 <div id="content" class="content">
 <div id='product_detail' class="product_detail">

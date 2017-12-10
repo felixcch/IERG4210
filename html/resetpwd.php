@@ -1,11 +1,12 @@
 <html>
 <?php session_start(); include_once("lib/util.php");
 if(!isset($_GET['nonce'])){
-    header('Location:index.php');
+    header('Location:index.php');exit();
 }
 else{
-    if (!preg_match('/^[\w\.]+$/', $_GET['nonce']))
-        header('Location:index.php');
+    if (!preg_match('/^[\w\.]+$/', $_GET['nonce'])){
+        header('Location:index.php');exit();
+    }
 }
 ?>
 

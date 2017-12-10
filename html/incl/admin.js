@@ -5,17 +5,21 @@
     function updateUI() {
         myLib.get({action:'orders_fetchall'},function(json){
             var listItems=[];
-            listItems.push ('<table border="1"<tr><th>oid</th><th>tid</th><th>Date</th></tr>');
+            listItems.push ('<table border="1"<tr><th>oid</th><th>user</th><th>tid</th><th>productInfo</th><th>Date</th></tr>');
             for (var options = [],
                      i = 0, order; order = json[i]; i++) {
-                    if(order.tdate==null){
-                        order.tdate='Not yet processed';
+                    for (var key in order){
+                        if(order[key]==null){
+                            order[key]='Not yet processed';
+                        }
                     }
-                    if(order.tid==null){
-                        order.tid='Null';
+                    if(order.tdate!='Not yet processed'){
+                        var date = new Date(order.tdate);
+                        date.setHours(date.getHours()+8);
+                        order.tdate = date;
                     }
                     listItems.push('<tr>');
-                    listItems.push('<td>',order.oid,'</td><td>',order.tid,'</td><td>',order.tdate,'</td>');
+                    listItems.push('<td>',order.oid,'</td><td>',order.username,'</td><td>',order.tid,'</td><td>',order.productInfo,'</td><td>',order.tdate,'</td>');
                     listItems.push('</tr>');
             }
             listItems.push('</table>');

@@ -26,6 +26,7 @@ include_once('lib/util.php');
         <input type="hidden" name="charset" value="utf-8" />
         <input type="hidden" name="custom" value="0" />
         <input type="hidden" name="invoice" value="0" />
+        <input type="hidden" name="nonce" value="<?php echo ierg4210_csrf_getNonce('authbuy')?>"/>
         <input type="submit" value="Checkout" />
     </form>
 </div>

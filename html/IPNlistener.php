@@ -51,10 +51,10 @@ if ($verified) {
      */
     date_default_timezone_set('Asia/Hong_Kong');
     $date = date('m/d/Y h:i:s a', time());
-    error_log("[".$date."]" . " IPN Verified \n", 3, "/var/www/log.txt");
-    error_log(print_r($_POST,true),3,"/var/www/log.txt");
+    error_log("[".$date."]" . " IPN Verified \n", 3, "/var/www/IPN_log.txt");
+    error_log(print_r($_POST,true),3,"/var/www/IPN_log.txt");
     $db =ierg4210_DB();
-    error_log("Database connected \n", 3, "/var/www/log.txt");
+    error_log("Database connected \n", 3, "/var/www/IPN_log.txt");
 
     $totalitem = $_POST['num_cart_items'];
     $list ="";
@@ -67,7 +67,7 @@ if ($verified) {
         $item_pid = ierg4210_getpid($item_name);
         $list .="{$item_pid}:{$item_quantity}&price={$item_amount},";
     }
-    error_log("list initialized:" . $list ."\n", 3, "/var/www/log.txt");
+    error_log("list initialized:" . $list ."\n", 3, "/var/www/IPN_log.txt");
     $merchant_email = $_POST['business'];
     $total = $_POST['mc_gross'];
     $invoice  = $_POST['invoice'];
@@ -75,10 +75,10 @@ if ($verified) {
     $txn_id = $_POST['txn_id'];
     $txn_type =$_POST['txn_type'];
     $digest_custom = $_POST['custom'];
-    error_log("Transaction id :".$txn_id."\n", 3, "/var/www/log.txt");
+    error_log("Transaction id :".$txn_id."\n", 3, "/var/www/IPN_log.txt");
 
     if(!ierg4210_IsOrderExist($invoice)){
-        error_log("The order does not exist\n", 3, "/var/www/log.txt");
+        error_log("The order does not exist\n", 3, "/var/www/IPN_log.txt");
         exit();
     }
 
@@ -88,12 +88,12 @@ if ($verified) {
     $db_digest = $info['digest'];
     $string = "username:{$username},currency:{$currency},merchantemail:{$merchant_email},salt:{$salt},pid_quantity_price:{$list}totalprice:{$total}";
     $digest_from_post = hash('sha256',$string);
-    error_log("String =".$string."\ntxn_type=".$txn_type.",  digest from post =". $digest_from_post.", digest_custom = " .$digest_custom.", db_digest=".$db_digest."\n", 3, "/var/www/log.txt");
+    error_log("String =".$string."\ntxn_type=".$txn_type.",  digest from post =". $digest_from_post.", digest_custom = " .$digest_custom.", db_digest=".$db_digest."\n", 3, "/var/www/IPN_log.txt");
     if(ierg4210_IsTidprocessd($invoice) || $txn_type!='cart' || $digest_from_post!=$digest_custom || $digest_custom!=$db_digest)
         exit();
     $q = $db->prepare("UPDATE orders  SET tid = (?),tdate=CURRENT_TIMESTAMP WHERE oid = (?) ");
     $q->execute(array($txn_id,$invoice));
-    error_log("Transaction  Inserted. Order id : " .$invoice."\n", 3, "/var/www/log.txt");
+    error_log("Transaction  Inserted. Order id : " .$invoice."\n", 3, "/var/www/IPN_log.txt");
 }
 
 // Reply with an empty 200 response to indicate to paypal the IPN was received correctly.

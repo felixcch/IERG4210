@@ -10,13 +10,17 @@
 
         $_GET[decode(arguments[1])] = decode(arguments[2]);
     });
-    if($_GET['passwordchanged']=='success'){
-        alert("Successful");
+    function isInt(value) {
+        return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value))
     }
     if($_GET['catid']===undefined){
         el('product_list').innerHTML = 'Welcome to my store. Please choose category';
     }
     else{
+        if(!isInt($_GET['catid'])){
+            alert('invalid-catid');
+            window.location ='index.php';
+        }
         fetchproduct(parseInt($_GET['catid']));
     }
     function fetchproduct(cid) {

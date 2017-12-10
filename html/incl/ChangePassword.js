@@ -1,23 +1,21 @@
 (function(){
 
-    el('ChangePassword').onsubmit = function(e) {
-                if(!validatePassword()){
-alert("passwords do not match");return false; 
-}
-        return myLib.submit(e, function() {
-               alert("successful");
+    el('ChangePassword').onsubmit = function() {
+        return myLib.submit(this, function(json) {
+               if(el('new_password').value!=el('confirm_new_password').value){
+                   alert('new passwords does not match');
+                   el('new_password').value='';
+                   el('confirm_new_password').value='';
+                   return false;
+               }
+               var message = json[0];
+               if(message.message=='Successful'){
+                    alert("Changed successfully! Please login again");
+                    window.location = 'login.php'
+            }
+            else{
+               alert('incorrect email or password!');
+        }
         });
-    }
-        var password = document.getElementById("new_password")
-  , confirm_password = document.getElementById("confirm_new_password");
-
-function validatePassword(){
-  if(password.value != confirm_password.value) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-confirm_password.onchange = validatePassword;
+    };
 })();
