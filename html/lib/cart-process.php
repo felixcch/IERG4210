@@ -45,7 +45,7 @@ function ierg4210_authbuy(){
      date_default_timezone_set('Asia/Hong_Kong');
      $date = date('m/d/Y h:i:s a', time());
      error_log("[".$date."]" . " Cart info sent to paypal. Waiting for transaction confirmation...\n", 3, "/var/www/IPN_log.txt");
-     error_log("Digest generated: " . $string . "\n", 3, "/var/www/IPN_log.txt");
+     error_log("Digest generated:" . $string . "\n", 3, "/var/www/IPN_log.txt");
      global $db;
      $db = ierg4210_DB();
      $q=$db->prepare("INSERT INTO orders (digest,salt,username,productInfo) VALUES(?,?,?,?)");

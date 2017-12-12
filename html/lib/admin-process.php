@@ -8,6 +8,8 @@ else{
     exit();
 }
 }
+date_default_timezone_set('Asia/Hong_Kong');
+$date = date('m/d/Y h:i:s a', time());
 function ierg4210_visitor_fetchall(){
     global $db;
     $db = ierg4210_DB();
@@ -59,7 +61,13 @@ function ierg4210_cat_insert() {
 	global $db;
 	$db = ierg4210_DB();
 	$q = $db->prepare("INSERT INTO categories (name) VALUES (?)");
-	return $q->execute(array($_POST['name']));
+    global $date;
+	if($q->execute(array($_POST['name']))){
+        error_log("[".$date."]" . " [Insert category] category insert successfully\n "." name:".$_POST['name']."\n", 3, "/var/www/admin_log.txt");
+	    return true;
+    };
+    error_log("[".$date."]" . " [Insert category] category insert failed\n "." name:".$_POST['name']."\n", 3, "/var/www/admin_log.txt");
+	return false;
 }
 
 function ierg4210_cat_edit() {
@@ -72,7 +80,13 @@ function ierg4210_cat_edit() {
         throw new Exception("invalid-catid");
     $db = ierg4210_DB();
     $q = $db->prepare("UPDATE categories SET name=(?) WHERE catid=(?)");
-    return $q->execute(array($_POST['name'],$_POST['catid']));
+    global $date;
+    if( $q->execute(array($_POST['name'],$_POST['catid']))){
+        error_log("[".$date."]" . " [Edit category] category edit successfully\n "." New name:".$_POST['name']."\n", 3, "/var/www/admin_log.txt");
+        return true;
+    };
+    error_log("[".$date."]" . " [Edit category] category edit failed\n "." New name:".$_POST['name']."\n", 3, "/var/www/admin_log.txt");
+    return false;
 }
 
 function ierg4210_cat_delete() {
@@ -85,7 +99,13 @@ function ierg4210_cat_delete() {
 	global $db;
 	$db = ierg4210_DB();
 	$q = $db->prepare("DELETE FROM categories WHERE catid = ?");
-	return $q->execute(array($_POST['catid']));
+    global $date;
+	if($q->execute(array($_POST['catid']))){
+        error_log("[".$date."]" . " [Delete category] category Delete successfully\n "."Catid:".$_POST['catid']."\n", 3, "/var/www/admin_log.txt");
+        return true;
+    }
+    error_log("[".$date."]" . " [Delete category] category Delete failed\n "."Caitd:".$_POST['catid']."\n", 3, "/var/www/admin_log.txt");
+    return false;
 }
 
 // Since this form will take file upload, we use the tranditional (simpler) rather than AJAX form submission.
@@ -94,6 +114,7 @@ function ierg4210_prod_insert() {
 	// input validation or sanitization
 	// DB manipulation
 	global $db;
+    global $date;
 	$db = ierg4210_DB();
     if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['prod_insert_nonce'])){
         throw new exception("CSRF-attack");
@@ -120,11 +141,13 @@ function ierg4210_prod_insert() {
             $lastId = $db->lastInsertId();
             if (move_uploaded_file($_FILES['file']['tmp_name'], getcwd() . "/../img/" . $lastId . ".jpg")) {
                 // redirect back to original page; you may comment it during debug
+                error_log("[".$date."]" . " [Insert product] product insert successfully\n pid".$lastId." name:".$_POST['name']."\n", 3, "/var/www/admin_log.txt");
                 header('Location:../admin.php');
                 exit();
             }
         }
         else{
+            error_log("[".$date."]" . " [Insert product] product insert successfully\n  name:".$_POST['name']."\n", 3, "/var/www/admin_log.txt");
             echo 'Fail to insert. <br/><a href="javascript:history.back();">Back to admin panel.</a>';
             exit();
         }
@@ -146,6 +169,8 @@ function ierg4210_prod_insert() {
 }
 function ierg4210_prod_edit()
 {
+    date_default_timezone_set('Asia/Hong_Kong');
+    $date = date('m/d/Y h:i:s a', time());
     global $db;
     $db = ierg4210_DB();
     if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['prod_edit_nonce'])){
@@ -177,22 +202,29 @@ function ierg4210_prod_edit()
         $q = $db->prepare($q);
     }
         // Copy the uploaded file to a folder which can be publicly accessible at incl/img/[pid].jpg
-        if (!file_exists($_FILES['file']['tmp_name'])) {
-            return ($q->execute(array($_POST['epid'])));
-        }
-        if ($_FILES["file"]["error"] == 0
-            && ($_FILES["file"]["type"] == "image/jpeg" || $_FILES["file"]["type"] == "image/png" || $_FILES["file"]["type"] == "image/gif")
-            && getimagesize($_FILES['file']['tmp_name'])
-            //&& (mime_content_type($_FILES["file"]["tmp_name"])=="image/jpeg" || mime_content_type($_FILES["file"]["tmp_name"])=="image/png"||mime_content_type($_FILES["file"]["type"])=="tmp_name/gif")
-            && $_FILES["file"]["size"] < 5000000) {
-            $q->execute(array($_POST['epid']));
-            // Note: Take care of the permission of destination folder (hints: current user is apache)
-            if (move_uploaded_file($_FILES["file"]["tmp_name"], getcwd() . "/../img/" . $_POST['pid'] . ".jpg")) {
-                // redirect back to original page; you may comment it during debug
+        if (!file_exists($_FILES["efile"]["tmp_name"])) {
+            if($q->execute(array($_POST['epid']))){
+                error_log("[".$date."]" . " [Edit product] product edit successfully withou image upload\n", 3, "/var/www/admin_log.txt");
                 header('Location:../admin.php');
                 exit();
-            }
+            };
         }
+        if ($_FILES["efile"]["error"] == 0
+            && ($_FILES["efile"]["type"] == "image/jpeg" || $_FILES["efile"]["type"] == "image/png" || $_FILES["efile"]["type"] == "image/gif")
+            && getimagesize($_FILES['efile']['tmp_name'])
+            //&& (mime_content_type($_FILES["file"]["tmp_name"])=="image/jpeg" || mime_content_type($_FILES["file"]["tmp_name"])=="image/png"||mime_content_type($_FILES["file"]["type"])=="tmp_name/gif")
+            && $_FILES["efile"]["size"] < 5000000) {
+            if( $q->execute(array($_POST['epid']))){
+                if (move_uploaded_file($_FILES["efile"]["tmp_name"], getcwd() . "/../img/" . $_POST['pid'] . ".jpg")) {
+                    // redirect back to original page; you may comment it during debug
+                    error_log("[".$date."]" . " [Edit product] Sucessful edit. File replaced successfully.Path:".getcwd() . "/../img/" . $_POST['pid'] . ".jpg".".\n", 3, "/var/www/admin_log.txt");
+                    header('Location:../admin.php');
+                    exit();
+                }
+            }
+            // Note: Take care of the permission of destination folder (hints: current user is apache)
+        }
+    error_log("[".$date."]" . " [Edit product] product edit failed\n  name:".$_POST['name']."\n", 3, "/var/www/admin_log.txt");
     // Only an invalid file will result in the execution below
     // To replace the content-type header which was json and output an error message
     header('Content-Type: text/html; charset=utf-8');
@@ -200,6 +232,7 @@ function ierg4210_prod_edit()
     exit();
 }
 function ierg4210_prod_delete(){
+    global $date;
     if (!preg_match('/^\d*$/', $_POST['pid']))
         throw new Exception("invalid-pid");
     // input validation or sanitization
@@ -209,8 +242,10 @@ function ierg4210_prod_delete(){
     $q = $db->prepare("DELETE FROM  products  WHERE pid=?");
     if($q->execute(array($_POST['pid']))){
         if(unlink(getcwd() ."/../img/" . $_POST['pid'] . ".jpg"))
+            error_log("[".$date."]" . " [Delete product] product deletion successful\n  pid:".$_POST['pid']."\n", 3, "/var/www/admin_log.txt");
         return true;
     }
+    error_log("[".$date."]" . " [Delete product] product deletion failed\n  pid:".$_POST['pid']."\n", 3, "/var/www/admin_log.txt");
     return false;   
 }
 

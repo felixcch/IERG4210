@@ -53,15 +53,17 @@ function ierg4210_verifyResetNonce(){
 
 }
 function ierg4210_resetpwd(){
-   /* if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['csrf_nonce'])){
+    if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['csrf_nonce'])){
         throw new exception("CSRF-attack");
-    }*/
+    }
     if (!preg_match('/^[\w\.]+$/', $_POST['reset_nonce']))
         throw new Exception("invalid-nonce");
-
     if (!preg_match('/^\w*$/', $_POST['new_password']))
         throw new Exception("invalid-password");
     $new_password=$_POST['new_password'];
+    $confirm_new_password = $_POST['confirm_new_password'];
+    if($new_password!=$confirm_new_password)
+        throw new Exception("invalid-password");
     $nonce = $_POST['reset_nonce'];
     $db = ierg4210_DB();
     $q = $db->prepare("SELECT username FROM resetpwd WHERE nonce=? AND finished=0;");
@@ -182,12 +184,17 @@ function ierg4210_ChangePassword(){
     if(!ierg4210_csrf_verifyNonce($_REQUEST['action'],$_POST['nonce'])){
         throw new exception("CSRF-attack");
     }
+    if(!ierg4210_validateCookie())
+        throw new Exception("invalid-auth");
     if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
         throw new Exception("invalid-email");
     if (!preg_match('/^\w*$/', $_POST['old_password']))
         throw new Exception("invalid-format-password");
     if (!preg_match('/^\w*$/', $_POST['new_password']))
         throw new Exception("invalid-format-password");
+    $auth = ierg4210_validateCookie();
+    if($auth['em']!=$_POST['email'])
+        throw new Exception("invalid-user");
     $email=$_POST['email'];
     $old_password=$_POST['old_password'];
     $new_password=$_POST['new_password'];

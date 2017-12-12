@@ -97,7 +97,7 @@ echo "You are logged as : ". $auth['em'];
 				<div><textarea id="prod_edit_description" name="edescription" pattern="^[\w\-, ]+$"></textarea></div>
 
 				<label for="prod_edit_file"> Image*</label>
-				<div><input id ='prod_edit_file' type="file" name="file"  accept="image/jpeg,image/png,image/gif" /></div>
+				<div><input id ='prod_edit_file' type="file" name="efile"  accept="image/jpeg,image/png,image/gif" /></div>
                 <input type="hidden" name ="prod_edit_nonce" value="<?php echo ierg4210_csrf_getNonce($action);?>"/>
 				<input type="submit" value="Submit" /><input type="button" id="prod_edit_cancel" value="Cancel" />
 			</form>

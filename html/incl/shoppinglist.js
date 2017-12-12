@@ -38,8 +38,17 @@
            el('cart').elements['custom'].value=returnValue.digest;
            el('cart').elements['invoice'].value=returnValue.invoice;
            el('cart').submit();
+            cart.clearAll();
       });
         return false;
+    };
+    el('clearCart').onclick = function(){
+        cart.clearAll();
+        alert("Cart cleared!!");
+    };
+    cart.clearAll = function (){
+        localStorage.removeItem("shoppinglist");
+        cart.UpdateShoppinglist();
     };
     cart.addEventtoButton= function () {
         var buttons = document.getElementsByClassName("button");
@@ -82,10 +91,10 @@
                     prod = json[0];
                     listItems.push('<li>');
                     listItems.push (prod.name, '  <input id="q', prod.pid, '" class="inputlist"  name ="', prod.name, '" type=number   value=', shoppinglist[k], ' min=0 >  @', prod.price);
-                    listItems.push (' <input   type="hidden"  name ="item_number_', num, '"    value=', num, ' min=0 >  ');
-                    listItems.push (' <input type="hidden"  name ="item_name_',num, '"    value=', prod.name, ' min=0 >  ');
-                    listItems.push (' <input  type="hidden"  name ="amount_', num, '"    value=', prod.price, ' min=0 >  ');
-                    listItems.push (' <input  type="hidden"  name ="quantity_', num, '"    value=', shoppinglist[k], ' min=0 >  ');
+                    listItems.push (' <input   type="hidden"  name ="item_number_', num, '"    value="', num, '" min=0 >  ');
+                    listItems.push (' <input type="hidden"  name ="item_name_',num, '"    value="', prod.name, '" min=0 >  ');
+                    listItems.push (' <input  type="hidden"  name ="amount_', num, '"    value="', prod.price, '"min=0 >  ');
+                    listItems.push (' <input  type="hidden"  name ="quantity_', num, '"    value="', shoppinglist[k],'" min=0 >  ');
                     listItems.push('</li>');
                     el('shoppingitemlist').innerHTML += listItems.join('');
                     var inputlist = document.getElementsByClassName("inputlist");
@@ -93,11 +102,11 @@
                         (function (i) {
                             inputlist[i].addEventListener('change', function () {
                                     if (!inputlist[i].value.match(/^[\d]+$/)) {
-                                        alert("You should enter positive integers only in Quantity");
+                                        alert("You should enter integers only in Quantity");
                                     }
                                     inputlist[i].value = parseInt(inputlist[i].value);
                                     var shoppinglist = JSON.parse(localStorage.getItem('shoppinglist'));
-                                    if (inputlist[i].value <= 0) {
+                                    if (inputlist[i].value == 0) {
                                         if (confirm('deleting ' + inputlist[i].name + '  in your shopping cart. Are you sure?')) {
                                             if (delete shoppinglist[inputlist[i].id.substring(1)])
                                                 alert(inputlist[i].name + ' deleted successfully');
@@ -117,10 +126,14 @@
                 });
             })(k,num);
         }
+        cart.UpdateTotal();
     }
 
     cart.UpdateTotal = function() {
         var shoppinglist = JSON.parse(localStorage.getItem('shoppinglist'));
+        if(shoppinglist===null){
+            el('Total').value = 0;
+        }
         var total = 0;
         for (var k in shoppinglist) {
             if (productlist[k]) {

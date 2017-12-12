@@ -30,6 +30,8 @@
                 el('resetpwd').onsubmit = function () {
                     if (!validatePassword()) {
                         alert("passwords do not match");
+                        el('new_password').value = '';
+                        el('confirm_new_password').value = '';
                         return false;
                     }
                         return myLib.submit(this, function (json) {

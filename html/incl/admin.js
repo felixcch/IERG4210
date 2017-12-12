@@ -93,8 +93,8 @@
             updateUI();
         });
     }
-    el('prod_edit').onsubmit = function() {
-        return myLib.submit(this, function() {
+    el('prod_edit').onsubmit = function(e) {
+        return myLib.submit(e, function() {
             // toggle the edit/view display
             el('productEditPanel').hide();
             el('productPanel').show();

@@ -12,10 +12,10 @@ include('incl/header.php');
     <a href="index.php"">Home</a>
 </div>
 <div id="shoppingcart" class="shoppingcart">
-    <p id="shoppinglist">Shopping List Total:$
-        <input id="Total" type="number" value=0 readonly/>
-    </p>
+    <div id="shoppinglist">Shopping List Total:$<input id="Total" type="number" value=0 readonly/>
+    </div>
     <form id="cart" method ="POST" action="https://www.sandbox.paypal.com/cgi-bin/webscr" onsubmit="return false">
+        <!--<input type="hidden" name ="nonce" value="<?php echo ierg4210_csrf_getNonce('buy');?>"/>!-->
         <ul id="shoppingitemlist">
         </ul>
         <input type="hidden" name="business" value="felixchouch-facilitator@gmail.com">
@@ -25,8 +25,9 @@ include('incl/header.php');
         <input type="hidden" name="charset" value="utf-8" />
         <input type="hidden" name="custom" value="0" />
         <input type="hidden" name="invoice" value="0" />
-        <input type="hidden" name="nonce" value="<?php echo ierg4210_csrf_getNonce('cart')?>"/>
+        <input type="hidden" name="nonce" value="<?php echo ierg4210_csrf_getNonce('authbuy')?>"/>
         <input type="submit" value="Checkout" />
+        <input id="clearCart" type="button" value ="clear"/>
     </form>
 </div>
 <div id="overlay" class="overlay">
