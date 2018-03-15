@@ -18,7 +18,7 @@ $options = [
     'salt' => $salt, //write your own code to generate a suitable salt
     'cost' => 12 // the default cost is 10
 ];
-$saltedpassword = password_hash('badguy74103665', PASSWORD_DEFAULT, $options);
+$saltedpassword = password_hash('******', PASSWORD_DEFAULT, $options);
 
 $q = $db->prepare("INSERT INTO user VALUES (1,'ierg4210s16@gmail.com',(?),(?),1 )");
 $result = $q->execute(array($salt,$saltedpassword));
