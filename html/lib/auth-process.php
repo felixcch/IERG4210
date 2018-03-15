@@ -151,8 +151,8 @@ function ierg4210_forgotpwd(){
     $mail->Host = "smtp.gmail.com";
     $mail->Port = 465; // or 587
     $mail->IsHTML(true);
-    $mail->Username = "ierg4210s16@gmail.com";
-    $mail->Password = "badguy74103665";
+    $mail->Username = "******";
+    $mail->Password = "******";
     $mail->SetFrom("no-reply@secure.s16.ierg4210.ie.cuhk.edu.hk");
     $mail->Subject = "Reset your password from s16's Online Shop";
     session_start();
