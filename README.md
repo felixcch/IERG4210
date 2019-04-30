@@ -1,6 +1,4 @@
-# IERG4210_2017
-CHOU CHI HO
-1155063142
+# IERG4210
 25-9-2017:
 Committed first time.
 
