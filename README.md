@@ -1,14 +1,14 @@
-# IERG4210
+Course IERG4210 project Final Grade : A
 
-Extensions:  
-1. Change password (4%)
-2. Reset password (8%)
-3. AJAX when broswing categories and product.(4%)
-4. AJAX in admin file upload. (3%)
-4. All cookies are httpOnly and secure.(1%)
+It is a university project featuring a online shopping web application.
+Users are able to login and add items to shopping cart, finally checkout to PayPal
 
-Peer hacking log:
-1. by s7. Declared invalid by tutor.
-2. by s12. Problem: broken auth in admin page.
-           Root cause: missing exit() after header.
-           Solution: Add exit() after header.
+Tech used: PHP, HTML, CSS, Javascript, AJAX, SQL, Sqlite3
+
+Login system:
+![alt text](https://github.com/felixcch/IERG4210/blob/master/Login.PNG)
+
+
+
+Check out to PayPal:
+![alt text](https://github.com/felixcch/IERG4210/blob/master/checkout.PNG)
