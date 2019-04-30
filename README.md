@@ -6,9 +6,9 @@ Users are able to login and add items to shopping cart, finally checkout to PayP
 Tech used: PHP, HTML, CSS, Javascript, AJAX, SQL, Sqlite3
 
 Login system:
-![alt text](https://github.com/felixcch/IERG4210/blob/master/Login.PNG)
+![alt text](https://github.com/felixcch/IERG4210/blob/master/Login.png)
 
 
 
 Check out to PayPal:
-![alt text](https://github.com/felixcch/IERG4210/blob/master/checkout.PNG)
+![alt text](https://github.com/felixcch/IERG4210/blob/master/checkout.png)
